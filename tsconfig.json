@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
-		"module": "es6",
+		"module": "commonjs",
 		// Target latest version of ECMAScript.
-		"target": "es5",
+		"target": "es6",
 		// path to output directory
 		"outDir": "./out/",
 		// enable strict null checks as a best practice
@@ -20,6 +20,7 @@
 		// use typescript to transpile jsx to js
 		"jsx": "react",
 		// "baseUrl": "./src",
+		"sourceMap": true,
 		"lib": [
 			"es2015",
 			"dom.iterable",

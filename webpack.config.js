@@ -21,6 +21,47 @@ module.exports = {
           loader: "babel-loader",
         },
       },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: "css-to-string-loader",
+          },
+          {
+            loader: "style-loader", // Creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader", // Translates CSS into CommonJS
+          },
+        ],
+      },
+      {
+        test: /\.less$/,
+        use: [
+          {
+            loader: "style-loader",
+          },
+          {
+            loader: "css-loader",
+          },
+          {
+            loader: "less-loader",
+            options: {
+              lessOptions: {
+                strictMath: true,
+                noIeCompat: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
+        loader: "url-loader?limit=100000",
+      },
     ],
+  },
+  node: {
+    fs: "empty",
   },
 };

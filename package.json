@@ -1,0 +1,63 @@
+{
+  "name": "vscode-crossnote",
+  "displayName": "Crossnote",
+  "description": "(WIP) Authentic markdown note taking app on VSCode with WYSIWYG editor",
+  "version": "0.0.1",
+  "publisher": "shd101wyy",
+  "main": "./out/extension.js",
+  "repository": "git@github.com:0xGG/vscode-crossnote.git",
+  "author": "Yiyi Wang <shd101wyy@gmail.com>",
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "vscode": "^1.43.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "vscode:prepublish": "npm run compile",
+    "compile": "npm-run-all compile:*",
+    "compile:extension": "tsc -p ./",
+    "compile:views": "webpack --mode production",
+    "watch": "npm-run-all -p watch:*",
+    "watch:extension": "tsc -watch -p ./",
+    "watch:views": "webpack --watch --mode development",
+    "lint": "tslint -p ./"
+  },
+  "activationEvents": [
+    "onCommand:extension.helloWorld"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.helloWorld",
+        "title": "Hello World"
+      }
+    ]
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.9.9",
+    "@types/node": "^13.11.0",
+    "@types/vscode": "^1.43.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "tslint": "^6.1.1",
+    "typescript": "^3.8.3",
+    "vickymd": "^0.1.13"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-react": "^7.9.4",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/react": "^16.9.32",
+    "@types/react-dom": "^16.9.6",
+    "babel-loader": "^8.1.0",
+    "html-webpack-plugin": "^4.0.4",
+    "npm-run-all": "^4.1.5",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}

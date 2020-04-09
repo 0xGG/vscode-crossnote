@@ -27,7 +27,8 @@
   },
   "activationEvents": [
     "onCommand:extension.helloWorld",
-    "onCommand:extension.testWebview"
+    "onCommand:extension.testWebview",
+    "onView:crossnoteFiles"
   ],
   "contributes": {
     "commands": [
@@ -39,7 +40,24 @@
         "command": "extension.testWebview",
         "title": "Test webview"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "crossnote",
+          "title": "Crossnote",
+          "icon": "./logo.svg"
+        }
+      ]
+    },
+    "views": {
+      "crossnote": [
+        {
+          "id": "crossnoteFiles",
+          "name": ""
+        }
+      ]
+    }
   },
   "dependencies": {
     "@material-ui/core": "^4.9.9",

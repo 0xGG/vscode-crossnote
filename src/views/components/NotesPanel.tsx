@@ -184,6 +184,12 @@ export function NotesPanel(props: Props) {
       switch (message.action) {
         case MessageAction.SelectedTreeItem:
           setSelectedTreeItem(message.data);
+          if (
+            selectedTreeItem &&
+            message.data.notebook.dir !== selectedTreeItem.notebook.dir
+          ) {
+            setSearchValue("");
+          }
           break;
         case MessageAction.InitializedNotes:
           const notes: Note[] = message.data;
@@ -201,7 +207,7 @@ export function NotesPanel(props: Props) {
     return () => {
       window.removeEventListener("message", onMessage);
     };
-  }, []);
+  }, [selectedTreeItem]);
 
   return (
     <Box className={clsx(classes.notesPanel)}>

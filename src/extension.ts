@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import * as path from "path";
+import { CrossnoteTreeViewProvider } from "./TreeView";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -22,6 +23,13 @@ export function activate(context: vscode.ExtensionContext) {
       // Display a message box to the user
       vscode.window.showInformationMessage("Hello World!");
     })
+  );
+
+  context.subscriptions.push(
+    vscode.window.registerTreeDataProvider(
+      "crossnoteTreeView",
+      new CrossnoteTreeViewProvider(vscode.workspace.workspaceFolders)
+    )
   );
 
   context.subscriptions.push(
@@ -47,6 +55,9 @@ export function activate(context: vscode.ExtensionContext) {
       );
       console.log(jsPath.toString());
       panel.webview.html = getWebviewContent(panel.webview, jsPath.toString());
+      panel.iconPath = vscode.Uri.file(
+        path.join(context.extensionPath, "media", "note.svg")
+      );
 
       panel.onDidDispose(() => {}, null, context.subscriptions);
     })

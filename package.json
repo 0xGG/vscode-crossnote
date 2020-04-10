@@ -28,7 +28,7 @@
   "activationEvents": [
     "onCommand:extension.helloWorld",
     "onCommand:extension.testWebview",
-    "onView:crossnoteFiles"
+    "onView:crossnoteTreeView"
   ],
   "contributes": {
     "commands": [
@@ -53,8 +53,8 @@
     "views": {
       "crossnote": [
         {
-          "id": "crossnoteFiles",
-          "name": ""
+          "id": "crossnoteTreeView",
+          "name": "Crossnote"
         }
       ]
     }

@@ -1,6 +1,4 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
-import * as path from "path";
 
 enum CrossnoteSectionType {
   Notebook = "Notebook",
@@ -33,6 +31,13 @@ class CrossnoteTreeItem extends vscode.TreeItem {
 
 export class CrossnoteTreeViewProvider
   implements vscode.TreeDataProvider<CrossnoteTreeItem> {
+  private _onDidChangeTreeData: vscode.EventEmitter<
+    CrossnoteTreeItem | undefined
+  > = new vscode.EventEmitter<CrossnoteTreeItem | undefined>();
+  readonly onDidChangeTreeData: vscode.Event<
+    CrossnoteTreeItem | undefined
+  > = this._onDidChangeTreeData.event;
+
   constructor(
     private workspaceFolders: readonly vscode.WorkspaceFolder[] | undefined
   ) {
@@ -108,5 +113,9 @@ export class CrossnoteTreeViewProvider
 
       return Promise.resolve(treeItems);
     }
+  }
+
+  public refresh(): void {
+    this._onDidChangeTreeData.fire();
   }
 }

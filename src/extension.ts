@@ -25,11 +25,19 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  const treeViewProvider = new CrossnoteTreeViewProvider(
+    vscode.workspace.workspaceFolders
+  );
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
       "crossnoteTreeView",
-      new CrossnoteTreeViewProvider(vscode.workspace.workspaceFolders)
+      treeViewProvider
     )
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("crossnote.refreshTreeView", () => {
+      treeViewProvider.refresh();
+    })
   );
 
   context.subscriptions.push(
@@ -53,10 +61,9 @@ export function activate(context: vscode.ExtensionContext) {
           )
         )
       );
-      console.log(jsPath.toString());
       panel.webview.html = getWebviewContent(panel.webview, jsPath.toString());
       panel.iconPath = vscode.Uri.file(
-        path.join(context.extensionPath, "media", "note.svg")
+        path.join(context.extensionPath, "media", "note2.svg")
       );
 
       panel.onDidDispose(() => {}, null, context.subscriptions);

@@ -32,6 +32,7 @@ export class CrossnoteTreeViewProvider
         try {
           const notebook = element.notebook;
           await notebook.initData();
+          this.crossnote.refreshNotesPanelWebview();
           const treeItems: CrossnoteTreeItem[] = [
             new CrossnoteTreeItem(
               "🗓 " + "Today",

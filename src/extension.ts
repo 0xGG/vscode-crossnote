@@ -50,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
       const panel = vscode.window.createWebviewPanel(
         "testWebview",
         "Test Webview",
-        vscode.ViewColumn.One,
+        vscode.ViewColumn.Two,
         {
           enableScripts: true,
         }
@@ -62,7 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
             context.extensionPath,
             "out",
             "views",
-            "EditorPanel.bundle.js"
+            "EditorPanelWebview.bundle.js"
           )
         )
       );

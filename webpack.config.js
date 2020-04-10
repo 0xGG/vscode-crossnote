@@ -2,8 +2,14 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    EditorPanel: path.resolve(__dirname, "./src/views/EditorPanel.tsx"),
-    NotesPanel: path.resolve(__dirname, "./src/views/NotesPanel.tsx"),
+    EditorPanelWebview: path.resolve(
+      __dirname,
+      "./src/views/EditorPanelWebview.tsx"
+    ),
+    NotesPanelWebview: path.resolve(
+      __dirname,
+      "./src/views/NotesPanelWebview.tsx"
+    ),
   },
   output: {
     path: path.resolve(__dirname, "./out/views"),

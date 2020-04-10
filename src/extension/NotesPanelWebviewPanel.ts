@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 
-export function createNotesPanelWebview(
+export function createNotesPanelWebviewPanel(
   context: vscode.ExtensionContext,
   onDidDispose: () => void
 ) {
@@ -15,7 +15,12 @@ export function createNotesPanelWebview(
   );
   const jsPath = panel.webview.asWebviewUri(
     vscode.Uri.file(
-      path.join(context.extensionPath, "out", "views", "NotesPanel.bundle.js")
+      path.join(
+        context.extensionPath,
+        "out",
+        "views",
+        "NotesPanelWebview.bundle.js"
+      )
     )
   );
 

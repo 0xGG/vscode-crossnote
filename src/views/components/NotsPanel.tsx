@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-import "typeface-roboto";
-import "typeface-noto-sans-sc";
-import { ThemeProvider } from "@material-ui/styles";
-import { crossnoteTheme } from "./util/theme";
-import "./index.less";
 import { Box, Typography } from "@material-ui/core";
-import { Message, MessageAction } from "../extension/message";
-import { CrossnoteTreeItem } from "../extension/TreeItem";
+import { Message, MessageAction } from "../../extension/message";
+import { CrossnoteTreeItem } from "../../extension/TreeItem";
 
 interface Props {}
-function NotesPanel(props: Props) {
+export function NotesPanel(props: Props) {
   const [selectedTreeItem, setSelectedTreeItem] = useState<CrossnoteTreeItem>(
     null
   );
@@ -45,11 +39,3 @@ function NotesPanel(props: Props) {
     </Box>
   );
 }
-
-ReactDOM.render(
-  <ThemeProvider theme={crossnoteTheme}>
-    <NotesPanel></NotesPanel>
-  </ThemeProvider>,
-
-  document.getElementById("root")
-);

@@ -1,6 +1,10 @@
+import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yamljs";
+import { CrossnoteTreeItem } from "./TreeItem";
+import { createNotesPanelWebview } from "./NotesPanelWebView";
+import { Message, MessageAction } from "./message";
 
 const pfs = fs.promises;
 
@@ -49,7 +53,8 @@ interface MatterOutput {
 
 export class Crossnote {
   public notebooks: Notebook[] = [];
-  constructor() {}
+  private notesPanelWebviewPanel: vscode.WebviewPanel | undefined;
+  constructor(private context: vscode.ExtensionContext) {}
   public addNotebook(name: string, dir: string): Notebook {
     let nb = this.notebooks.find((nb) => nb.dir === dir);
     if (!nb) {
@@ -60,8 +65,27 @@ export class Crossnote {
       return nb;
     }
   }
-  public getNotebookByPath(path: string): Notebook | undefined {
-    return this.notebooks.find((notebook) => notebook.dir === path);
+
+  public openNotesPanelWebview(selectedTreeItem: CrossnoteTreeItem) {
+    if (!this.notesPanelWebviewPanel) {
+      this.notesPanelWebviewPanel = createNotesPanelWebview(
+        this.context,
+        () => {
+          this.notesPanelWebviewPanel = undefined;
+        }
+      );
+    } else {
+      this.notesPanelWebviewPanel.reveal(vscode.ViewColumn.One);
+    }
+
+    const message: Message = {
+      action: MessageAction.SelectedTreeItem,
+      data: {
+        path: selectedTreeItem.path,
+        type: selectedTreeItem.type,
+      },
+    };
+    this.notesPanelWebviewPanel.webview.postMessage(message);
   }
 }
 

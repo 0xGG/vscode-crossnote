@@ -1,36 +1,6 @@
 import * as vscode from "vscode";
-import { Crossnote, Notebook } from "./lib/crossnote";
-
-enum CrossnoteSectionType {
-  Notebook = "Notebook",
-  Notes = "Notes",
-  Today = "Today",
-  Todo = "Todo",
-  Tagged = "Tagged",
-  Untagged = "Untagged",
-  Conflicted = "Conflicted",
-  Encrypted = "Encrypted",
-  Wiki = "Wiki",
-  Error = "Error",
-}
-
-class CrossnoteTreeItem extends vscode.TreeItem {
-  public notebook: Notebook;
-  public type: CrossnoteSectionType;
-  public path: string;
-  constructor(
-    label: string,
-    collapsibleState: vscode.TreeItemCollapsibleState,
-    notebook: Notebook,
-    type: CrossnoteSectionType,
-    path: string
-  ) {
-    super(label, collapsibleState);
-    this.notebook = notebook;
-    this.type = type;
-    this.path = path;
-  }
-}
+import { Crossnote } from "./crossnote";
+import { CrossnoteTreeItem, CrossnoteSectionType } from "./TreeItem";
 
 export class CrossnoteTreeViewProvider
   implements vscode.TreeDataProvider<CrossnoteTreeItem> {
@@ -79,7 +49,7 @@ export class CrossnoteTreeViewProvider
               "."
             ),
             new CrossnoteTreeItem(
-              "🗂️ " + "Notes",
+              "📁 " + "Notes",
               notebook.rootDirectory?.children.length
                 ? vscode.TreeItemCollapsibleState.Collapsed
                 : vscode.TreeItemCollapsibleState.None,
@@ -181,7 +151,7 @@ export class CrossnoteTreeViewProvider
           vscode.TreeItemCollapsibleState.Collapsed,
           notebook,
           CrossnoteSectionType.Notebook,
-          workspaceFolder.uri.fsPath
+          "." // workspaceFolder.uri.fsPath
         );
         return treeItem;
       });

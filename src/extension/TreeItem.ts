@@ -1,18 +1,6 @@
 import * as vscode from "vscode";
-import { Notebook } from "./crossnote";
-
-export enum CrossnoteSectionType {
-  Notebook = "Notebook",
-  Notes = "Notes",
-  Today = "Today",
-  Todo = "Todo",
-  Tagged = "Tagged",
-  Untagged = "Untagged",
-  Conflicted = "Conflicted",
-  Encrypted = "Encrypted",
-  Wiki = "Wiki",
-  Error = "Error",
-}
+import { Notebook } from "../lib/notebook";
+import { CrossnoteSectionType } from "../lib/section";
 
 export class CrossnoteTreeItem extends vscode.TreeItem {
   public notebook: Notebook;

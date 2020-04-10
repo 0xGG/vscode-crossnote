@@ -3,7 +3,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { CrossnoteTreeViewProvider } from "./extension/TreeView";
-import { Crossnote } from "./extension/crossnote";
+import { Crossnote } from "./lib/crossnote";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed

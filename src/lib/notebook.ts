@@ -1,33 +1,9 @@
-import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yamljs";
-import { CrossnoteTreeItem } from "./TreeItem";
-import { createNotesPanelWebviewPanel } from "./NotesPanelWebviewPanel";
-import { Message, MessageAction } from "./message";
+import { Note, NoteConfig } from "./note";
 
 const pfs = fs.promises;
-
-export interface NoteConfigEncryption {
-  title: string;
-  // method: string;? // Default AES256
-}
-
-export interface NoteConfig {
-  id?: string;
-  createdAt: Date;
-  modifiedAt: Date;
-  tags?: string[];
-  pinned?: boolean;
-  encryption?: NoteConfigEncryption;
-}
-
-export interface Note {
-  notebook: Notebook;
-  filePath: string;
-  markdown: string;
-  config: NoteConfig;
-}
 
 export interface Directory {
   name: string;
@@ -49,55 +25,6 @@ interface ListNotesArgs {
 interface MatterOutput {
   data: any;
   content: string;
-}
-
-export class Crossnote {
-  public notebooks: Notebook[] = [];
-  private notesPanelWebviewPanel: vscode.WebviewPanel | undefined;
-  private selectedTreeItem: CrossnoteTreeItem | undefined;
-  constructor(private context: vscode.ExtensionContext) {}
-  public addNotebook(name: string, dir: string): Notebook {
-    let nb = this.notebooks.find((nb) => nb.dir === dir);
-    if (!nb) {
-      const notebook = new Notebook(name, dir);
-      this.notebooks.push(notebook);
-      return notebook;
-    } else {
-      return nb;
-    }
-  }
-
-  public refreshNotesPanelWebview() {
-    this.openNotesPanelWebview(this.selectedTreeItem);
-  }
-
-  public openNotesPanelWebview(
-    selectedTreeItem: CrossnoteTreeItem | undefined
-  ) {
-    if (!selectedTreeItem) {
-      return;
-    }
-    if (!this.notesPanelWebviewPanel) {
-      this.notesPanelWebviewPanel = createNotesPanelWebviewPanel(
-        this.context,
-        () => {
-          this.notesPanelWebviewPanel = undefined;
-        }
-      );
-    } else {
-      this.notesPanelWebviewPanel.reveal(vscode.ViewColumn.One);
-    }
-
-    const message: Message = {
-      action: MessageAction.SelectedTreeItem,
-      data: {
-        path: selectedTreeItem.path,
-        type: selectedTreeItem.type,
-      },
-    };
-    this.notesPanelWebviewPanel.webview.postMessage(message);
-    this.selectedTreeItem = selectedTreeItem;
-  }
 }
 
 export class Notebook {
@@ -201,7 +128,7 @@ ${markdown}`;
 
       // Create note
       const note: Note = {
-        notebook: this,
+        notebookPath: this.dir,
         filePath: path.relative(this.dir, absFilePath),
         markdown,
         config: noteConfig,

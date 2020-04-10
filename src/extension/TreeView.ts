@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
-import { Crossnote } from "./crossnote";
-import { CrossnoteTreeItem, CrossnoteSectionType } from "./TreeItem";
+import { Crossnote } from "../lib/crossnote";
+import { CrossnoteTreeItem } from "./TreeItem";
+import { CrossnoteSectionType } from "../lib/section";
 
 export class CrossnoteTreeViewProvider
   implements vscode.TreeDataProvider<CrossnoteTreeItem> {
@@ -95,7 +96,10 @@ export class CrossnoteTreeViewProvider
             ),
           ];
         }
-      } else if (element.type === CrossnoteSectionType.Notes) {
+      } else if (
+        element.type === CrossnoteSectionType.Notes ||
+        element.type === CrossnoteSectionType.Directory
+      ) {
         const dirArr = element.path.split("/");
         let directory = element.notebook.rootDirectory;
         let children = directory?.children;
@@ -112,11 +116,14 @@ export class CrossnoteTreeViewProvider
               ? vscode.TreeItemCollapsibleState.Collapsed
               : vscode.TreeItemCollapsibleState.None,
             element.notebook,
-            CrossnoteSectionType.Notes,
+            CrossnoteSectionType.Directory,
             child.path
           );
         });
-      } else if (element.type === CrossnoteSectionType.Tagged) {
+      } else if (
+        element.type === CrossnoteSectionType.Tagged ||
+        element.type === CrossnoteSectionType.Tag
+      ) {
         const tagArr = element.path.split("/");
         let tagNode = element.notebook.rootTagNode;
         let children = tagNode?.children;
@@ -133,7 +140,7 @@ export class CrossnoteTreeViewProvider
               ? vscode.TreeItemCollapsibleState.Collapsed
               : vscode.TreeItemCollapsibleState.None,
             element.notebook,
-            CrossnoteSectionType.Tagged,
+            CrossnoteSectionType.Tag,
             child.path
           );
         });

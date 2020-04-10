@@ -1127,6 +1127,11 @@
     "@types/webpack-sources" "*"
     source-map "^0.6.0"
 
+"@types/yamljs@^0.2.30":
+  version "0.2.30"
+  resolved "https://registry.npm.taobao.org/@types/yamljs/download/@types/yamljs-0.2.30.tgz#d034e1d329e46e8d0f737c9a8db97f68f81b5382"
+  integrity sha1-0DTh0ynkbo0Pc3yajbl/aPgbU4I=
+
 "@urql/core@^1.10.5":
   version "1.10.7"
   resolved "https://registry.npm.taobao.org/@urql/core/download/@urql/core-1.10.7.tgz#4632088a9abd5884e08726242261ea39d3cdda40"

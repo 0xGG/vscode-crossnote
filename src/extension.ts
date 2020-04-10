@@ -3,6 +3,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { CrossnoteTreeViewProvider } from "./TreeView";
+import { Crossnote } from "./lib/crossnote";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -25,20 +26,30 @@ export function activate(context: vscode.ExtensionContext) {
     })
   );
 
+  const crossnote = new Crossnote();
   const treeViewProvider = new CrossnoteTreeViewProvider(
+    crossnote,
     vscode.workspace.workspaceFolders
   );
-  context.subscriptions.push(
-    vscode.window.registerTreeDataProvider(
-      "crossnoteTreeView",
-      treeViewProvider
-    )
-  );
+  const treeView = vscode.window.createTreeView("crossnoteTreeView", {
+    treeDataProvider: treeViewProvider,
+  });
   context.subscriptions.push(
     vscode.commands.registerCommand("crossnote.refreshTreeView", () => {
       treeViewProvider.refresh();
     })
   );
+  treeView.onDidChangeSelection((e) => {
+    console.log(
+      "onDidChangeSelection: ",
+      e.selection.map((sel) => {
+        return {
+          type: sel.type,
+          path: sel.path,
+        };
+      })
+    );
+  });
 
   context.subscriptions.push(
     vscode.commands.registerCommand("extension.testWebview", () => {

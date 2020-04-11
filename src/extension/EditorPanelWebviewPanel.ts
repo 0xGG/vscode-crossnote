@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import { getWebviewCSP } from "./WebviewConfig";
 
 export function createEditorPanelWebviewPanel(
   context: vscode.ExtensionContext,
@@ -87,17 +88,10 @@ function getWebviewContent(
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta
-        http-equiv="Content-Security-Policy"
-        content="img-src 'self' data: https: ${
-          webview.cspSource
-        }; script-src 'self' 'unsafe-eval' 'unsafe-inline' cdn.jsdelivr.net unpkg.com tessdata.projectnaptha.com gist.github.com blob: ${
-    webview.cspSource
-  }"
-      />
-      <meta
         name="description"
         content="Crossnote - A markdown note pwa that supports offline editing as well as git repository push&pull "
       />
+      ${getWebviewCSP(webview)}
       ${cssArr
         .map((css) => `<link rel="stylesheet" href="${css}"></link>`)
         .join("\n")}

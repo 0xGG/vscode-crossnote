@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import YAML from "yamljs";
-import { Note, NoteConfig } from "./note";
+import { Note, NoteConfig, getHeaderFromMarkdown } from "./note";
+import AES from "crypto-js/aes";
 
 const pfs = fs.promises;
 
@@ -265,5 +266,45 @@ ${markdown}`;
 
   public hasSummaryMD(): boolean {
     return fs.existsSync(path.resolve(this.dir, "SUMMARY.md"));
+  }
+
+  public async writeNote(
+    filePath: string,
+    markdown: string,
+    noteConfig: NoteConfig,
+    password?: string
+  ): Promise<NoteConfig> {
+    noteConfig.modifiedAt = new Date();
+
+    try {
+      const data = this.matter(markdown);
+      if (data.data["note"] && data.data["note"] instanceof Object) {
+        noteConfig = Object.assign({}, noteConfig, data.data["note"] || {});
+      }
+      const frontMatter = Object.assign(data.data || {}, { note: noteConfig });
+      markdown = data.content;
+      if (noteConfig.encryption) {
+        // TODO: Refactor
+        noteConfig.encryption.title = getHeaderFromMarkdown(markdown);
+        markdown = AES.encrypt(
+          JSON.stringify({ markdown }),
+          password || ""
+        ).toString();
+      }
+      markdown = this.matterStringify(markdown, frontMatter);
+    } catch (error) {
+      if (noteConfig.encryption) {
+        // TODO: Refactor
+        noteConfig.encryption.title = getHeaderFromMarkdown(markdown);
+        markdown = AES.encrypt(
+          JSON.stringify({ markdown }),
+          password || ""
+        ).toString();
+      }
+      markdown = this.matterStringify(markdown, { note: noteConfig });
+    }
+
+    await pfs.writeFile(path.resolve(this.dir, filePath), markdown);
+    return noteConfig;
   }
 }

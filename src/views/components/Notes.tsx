@@ -49,18 +49,21 @@ interface Props {
   notes: Note[];
   orderBy: OrderBy;
   orderDirection: OrderDirection;
+  selectedNote: Note;
+  setSelectedNote: (note: Note) => void;
 }
 
 export default function Notes(props: Props) {
   const classes = useStyles(props);
   const { t } = useTranslation();
   const [notes, setNotes] = useState<Note[]>([]);
-  const [selectedNote, setSelectedNote] = useState<Note>(null);
   const [notesListElement, setNotesListElement] = useState<HTMLElement>(null);
   const [forceUpdate, setForceUpdate] = useState<number>(Date.now());
   const searchValue = props.searchValue;
   const orderBy = props.orderBy;
   const orderDirection = props.orderDirection;
+  const selectedNote = props.selectedNote;
+  const setSelectedNote = props.setSelectedNote;
 
   useEffect(() => {
     const pinned: Note[] = [];
@@ -149,17 +152,24 @@ export default function Notes(props: Props) {
   }, [props.notes, searchValue, orderBy, orderDirection]);
 
   useEffect(() => {
-    if (notes && notes.length) {
+    if (
+      notes &&
+      notes.length > 0 &&
+      (!selectedNote || selectedNote.notebookPath !== notes[0].notebookPath)
+    ) {
+      setSelectedNote(notes[0]);
+    }
+  }, [notes, selectedNote]);
+
+  useEffect(() => {
+    if (selectedNote) {
       const message: Message = {
         action: MessageAction.OpenNoteIfNoNoteSelected,
-        data: notes[0],
+        data: selectedNote,
       };
       vscode.postMessage(message);
-      setSelectedNote(notes[0]);
-    } else {
-      setSelectedNote(null);
     }
-  }, [notes]);
+  }, [selectedNote]);
 
   /*
   useEffect(() => {

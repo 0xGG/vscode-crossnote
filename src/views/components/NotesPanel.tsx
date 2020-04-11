@@ -121,6 +121,7 @@ export function NotesPanel(props: Props) {
   const classes = useStyles(props);
   const { t } = useTranslation();
   const [selectedSection, setSelectedSection] = useState<SelectedSection>(null);
+  const [selectedNote, setSelectedNote] = useState<Note>(null);
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchValueInputTimeout, setSearchValueInputTimeout] = useState<
@@ -188,6 +189,13 @@ export function NotesPanel(props: Props) {
           });
           setNotes(message.data || []);
           break;
+        case MessageAction.CreatedNewNote:
+          const note = message.data;
+          note.config.createdAt = new Date(note.config.createdAt || 0);
+          note.config.modifiedAt = new Date(note.config.modifiedAt || 0);
+
+          setNotes((notes) => [note, ...notes]);
+          setSelectedNote(note);
         default:
           break;
       }
@@ -390,6 +398,8 @@ export function NotesPanel(props: Props) {
         notes={notes}
         orderBy={orderBy}
         orderDirection={orderDirection}
+        selectedNote={selectedNote}
+        setSelectedNote={setSelectedNote}
       ></Notes>
     </Box>
   );

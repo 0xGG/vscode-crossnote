@@ -3,11 +3,11 @@ import * as path from "path";
 import { CrossnoteTreeItem } from "../extension/TreeItem";
 import { createNotesPanelWebviewPanel } from "../extension/NotesPanelWebviewPanel";
 import { Message, MessageAction } from "./message";
-import { OneDay } from "../util/util";
+import { OneDay, randomID } from "../util/util";
 import { Notebook } from "./notebook";
-import { CrossnoteSectionType } from "./section";
+import { CrossnoteSectionType, SelectedSection } from "./section";
 import { createEditorPanelWebviewPanel } from "../extension/EditorWebviewPanel";
-import { Note } from "./note";
+import { Note, NoteConfig } from "./note";
 
 export class Crossnote {
   public notebooks: Notebook[] = [];
@@ -57,6 +57,9 @@ export class Crossnote {
         if (!this.selectedNote) {
           this.openEditorPanelWebview(message.data);
         }
+        break;
+      case MessageAction.CreateNewNote:
+        this.createNewNote(message.data);
         break;
       default:
         break;
@@ -168,6 +171,13 @@ export class Crossnote {
       );
     }
 
+    if (
+      this.selectedNote &&
+      this.selectedNote.notebookPath !== this.selectedTreeItem.notebook.dir
+    ) {
+      this.selectedNote = undefined;
+    }
+
     let message: Message = {
       action: MessageAction.SendNotes,
       data: notes,
@@ -212,5 +222,46 @@ export class Crossnote {
     };
     this.editorPanelWebviewPanel.title = path.basename(note.filePath);
     this.editorPanelWebviewPanel.webview.postMessage(message);
+  }
+
+  private async createNewNote(selectedSection: SelectedSection) {
+    const notebook = this.getNotebookByPath(selectedSection.notebook.dir);
+    if (!notebook) {
+      return;
+    }
+    const fileName = "unnamed_" + randomID() + ".md";
+    let filePath;
+    let tags: string[] = [];
+    if (selectedSection.type === CrossnoteSectionType.Tag) {
+      filePath = fileName;
+      tags = [selectedSection.path];
+    } else if (selectedSection.type === CrossnoteSectionType.Directory) {
+      filePath = path.relative(
+        notebook.dir,
+        path.resolve(notebook.dir, selectedSection.path, fileName)
+      );
+    } else {
+      filePath = fileName;
+    }
+
+    const noteConfig: NoteConfig = {
+      tags: tags,
+      modifiedAt: new Date(),
+      createdAt: new Date(),
+    };
+    await notebook.writeNote(filePath, "", noteConfig);
+
+    if (this.notesPanelWebviewPanel && this.notesPanelWebviewInitialized) {
+      const note = await notebook.getNote(filePath);
+      if (!note) {
+        return;
+      }
+      const message: Message = {
+        action: MessageAction.CreatedNewNote,
+        data: note,
+      };
+      this.notesPanelWebviewPanel.webview.postMessage(message);
+      this.openEditorPanelWebview(note);
+    }
   }
 }

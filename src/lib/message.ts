@@ -7,6 +7,7 @@ export enum MessageAction {
   InitializedNotesPanelWebview = "InitializedNotesPanelWebview",
   InitializedEditorPanelWebview = "InitializedEditorPanelWebview",
   CreateNewNote = "CreateNewNote",
+  CreatedNewNote = "CreatedNewNote",
   OpenNote = "OpenNote",
   OpenNoteIfNoNoteSelected = "OpenNoteIfNoNoteSelected",
   SendNote = "SendNote",
@@ -37,6 +38,11 @@ export interface CreateNewNoteMessage {
   data: SelectedSection;
 }
 
+export interface CreatedNewNoteMessage {
+  action: MessageAction.CreatedNewNote;
+  data: Note;
+}
+
 export interface OpenNoteMessage {
   action: MessageAction.OpenNote;
   data: Note;
@@ -58,6 +64,7 @@ export type Message =
   | InitializedNotesPanelWebviewMessage
   | InitializedEditorPanelWebviewMessage
   | CreateNewNoteMessage
+  | CreatedNewNoteMessage
   | OpenNoteMessage
   | OpenNoteIfNoNoteSelected
   | SendNoteMessage;

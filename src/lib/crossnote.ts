@@ -6,7 +6,7 @@ import { Message, MessageAction } from "./message";
 import { OneDay, randomID } from "../util/util";
 import { Notebook } from "./notebook";
 import { CrossnoteSectionType, SelectedSection } from "./section";
-import { createEditorPanelWebviewPanel } from "../extension/EditorWebviewPanel";
+import { createEditorPanelWebviewPanel } from "../extension/EditorPanelWebviewPanel";
 import { Note, NoteConfig } from "./note";
 
 export class Crossnote {

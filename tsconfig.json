@@ -38,7 +38,8 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		"forceConsistentCasingInFileNames": true,
-		"importHelpers": true
+		"importHelpers": true,
+		"skipLibCheck": true, // HACK: Seems like @types/react causes issue because of conflicts with @types/react-dom
 	},
 	"include": ["./src/**/*"],
     "exclude": ["node_modules", ".vscode-test", "webpack.config.js", "./src/views"]

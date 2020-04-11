@@ -5,12 +5,20 @@ import { Message, MessageAction } from "./message";
 import { OneDay } from "../util/util";
 import { Notebook } from "./notebook";
 import { CrossnoteSectionType } from "./section";
+import { createEditorPanelWebviewPanel } from "../extension/EditorWebviewPanel";
+import { Note } from "./note";
 
 export class Crossnote {
   public notebooks: Notebook[] = [];
+
   private notesPanelWebviewPanel: vscode.WebviewPanel | undefined;
   private notesPanelWebviewInitialized: boolean = false;
+  private editorPanelWebviewPanel: vscode.WebviewPanel | undefined;
+  private editorPanelWebviewInitialized: boolean = false;
+
   private selectedTreeItem: CrossnoteTreeItem | undefined;
+  private selectedNote: Note | undefined;
+
   constructor(private context: vscode.ExtensionContext) {}
   public addNotebook(name: string, dir: string): Notebook {
     let nb = this.notebooks.find((nb) => nb.dir === dir);
@@ -32,11 +40,17 @@ export class Crossnote {
   }
 
   private onDidReceiveMessage(message: Message) {
-    console.log("Received message from webview: ", message);
     switch (message.action) {
       case MessageAction.InitializedNotesPanelWebview:
         this.notesPanelWebviewInitialized = true;
         this.sendNotesToNotesPanelWebview();
+        break;
+      case MessageAction.InitializedEditorPanelWebview:
+        this.editorPanelWebviewInitialized = true;
+        this.sendNoteToEditorWebviewPanel();
+        break;
+      case MessageAction.OpenNote:
+        this.openEditorPanelWebview(message.data);
         break;
       default:
         break;
@@ -68,6 +82,28 @@ export class Crossnote {
 
     this.selectedTreeItem = selectedTreeItem;
     this.sendNotesToNotesPanelWebview();
+  }
+
+  public openEditorPanelWebview(note: Note) {
+    if (!this.editorPanelWebviewPanel) {
+      this.editorPanelWebviewPanel = createEditorPanelWebviewPanel(
+        this.context,
+        () => {
+          this.editorPanelWebviewPanel = undefined;
+          this.editorPanelWebviewInitialized = false;
+        }
+      );
+      this.editorPanelWebviewPanel.webview.onDidReceiveMessage(
+        this.onDidReceiveMessage.bind(this),
+        undefined,
+        this.context.subscriptions
+      );
+    } else {
+      this.editorPanelWebviewPanel.reveal(vscode.ViewColumn.Two);
+    }
+
+    this.selectedNote = note;
+    this.sendNoteToEditorWebviewPanel();
   }
 
   private sendNotesToNotesPanelWebview() {
@@ -127,7 +163,7 @@ export class Crossnote {
     }
 
     let message: Message = {
-      action: MessageAction.InitializedNotes,
+      action: MessageAction.SendNotes,
       data: notes,
     };
     this.notesPanelWebviewPanel.webview.postMessage(message);
@@ -144,5 +180,21 @@ export class Crossnote {
       },
     };
     this.notesPanelWebviewPanel.webview.postMessage(message);
+  }
+
+  private sendNoteToEditorWebviewPanel() {
+    if (
+      !this.selectedNote ||
+      !this.editorPanelWebviewPanel ||
+      !this.editorPanelWebviewInitialized
+    ) {
+      return;
+    }
+
+    let message: Message = {
+      action: MessageAction.SendNote,
+      data: this.selectedNote,
+    };
+    this.editorPanelWebviewPanel.webview.postMessage(message);
   }
 }

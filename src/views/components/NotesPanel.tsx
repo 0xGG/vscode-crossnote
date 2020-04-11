@@ -33,18 +33,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { Message, MessageAction } from "../../lib/message";
 import { Note } from "../../lib/note";
-import { CrossnoteSectionType } from "../../lib/section";
+import { CrossnoteSectionType, SelectedSection } from "../../lib/section";
 import Notes, { OrderDirection, OrderBy } from "./Notes";
 import { vscode } from "../util/util";
-
-interface CrossnoteTreeItem {
-  type: CrossnoteSectionType;
-  path: string;
-  notebook: {
-    name: string;
-    dir: string;
-  };
-}
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -129,9 +120,7 @@ interface Props {}
 export function NotesPanel(props: Props) {
   const classes = useStyles(props);
   const { t } = useTranslation();
-  const [selectedTreeItem, setSelectedTreeItem] = useState<CrossnoteTreeItem>(
-    null
-  );
+  const [selectedSection, setSelectedSection] = useState<SelectedSection>(null);
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
   const [searchValueInputTimeout, setSearchValueInputTimeout] = useState<
@@ -145,15 +134,15 @@ export function NotesPanel(props: Props) {
   );
 
   const createNewNote = useCallback(() => {
-    if (!selectedTreeItem) {
+    if (!selectedSection) {
       return;
     }
     const message: Message = {
       action: MessageAction.CreateNewNote,
-      data: selectedTreeItem,
+      data: selectedSection,
     };
     vscode.postMessage(message);
-  }, [selectedTreeItem]);
+  }, [selectedSection]);
 
   const onChangeSearchValue = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -183,15 +172,15 @@ export function NotesPanel(props: Props) {
       const message: Message = event.data;
       switch (message.action) {
         case MessageAction.SelectedTreeItem:
-          setSelectedTreeItem(message.data);
+          setSelectedSection(message.data);
           if (
-            selectedTreeItem &&
-            message.data.notebook.dir !== selectedTreeItem.notebook.dir
+            selectedSection &&
+            message.data.notebook.dir !== selectedSection.notebook.dir
           ) {
             setSearchValue("");
           }
           break;
-        case MessageAction.InitializedNotes:
+        case MessageAction.SendNotes:
           const notes: Note[] = message.data;
           notes.forEach((note) => {
             note.config.createdAt = new Date(note.config.createdAt || 0);
@@ -207,7 +196,7 @@ export function NotesPanel(props: Props) {
     return () => {
       window.removeEventListener("message", onMessage);
     };
-  }, [selectedTreeItem]);
+  }, [selectedSection]);
 
   return (
     <Box className={clsx(classes.notesPanel)}>
@@ -238,17 +227,17 @@ export function NotesPanel(props: Props) {
           className={clsx(classes.row)}
           style={{ justifyContent: "space-between" }}
         >
-          {selectedTreeItem?.type === CrossnoteSectionType.Notes ||
-          selectedTreeItem?.type === CrossnoteSectionType.Notebook ? (
+          {selectedSection?.type === CrossnoteSectionType.Notes ||
+          selectedSection?.type === CrossnoteSectionType.Notebook ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="notes">
                 📔
               </span>
               <Typography className={clsx(classes.sectionName)}>
-                {selectedTreeItem.notebook.name}
+                {selectedSection.notebook.name}
               </Typography>
             </Box>
-          ) : selectedTreeItem?.type === CrossnoteSectionType.Today ? (
+          ) : selectedSection?.type === CrossnoteSectionType.Today ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="today-notes">
                 🗓
@@ -257,7 +246,7 @@ export function NotesPanel(props: Props) {
                 {t("general/today")}
               </Typography>
             </Box>
-          ) : selectedTreeItem?.type === CrossnoteSectionType.Todo ? (
+          ) : selectedSection?.type === CrossnoteSectionType.Todo ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="todo-notes">
                 ☑️
@@ -266,7 +255,7 @@ export function NotesPanel(props: Props) {
                 {t("general/todo")}
               </Typography>
             </Box>
-          ) : selectedTreeItem?.type === CrossnoteSectionType.Tagged ? (
+          ) : selectedSection?.type === CrossnoteSectionType.Tagged ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="tagged-notes">
                 🏷️
@@ -275,7 +264,7 @@ export function NotesPanel(props: Props) {
                 {t("general/tagged")}
               </Typography>
             </Box>
-          ) : selectedTreeItem?.type === CrossnoteSectionType.Untagged ? (
+          ) : selectedSection?.type === CrossnoteSectionType.Untagged ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="untagged-notes">
                 🈚
@@ -284,16 +273,16 @@ export function NotesPanel(props: Props) {
                 {t("general/untagged")}
               </Typography>
             </Box>
-          ) : selectedTreeItem?.type === CrossnoteSectionType.Tag ? (
+          ) : selectedSection?.type === CrossnoteSectionType.Tag ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="tag">
                 🏷️
               </span>
               <Typography className={clsx(classes.sectionName)}>
-                {selectedTreeItem.path}
+                {selectedSection.path}
               </Typography>
             </Box>
-          ) : selectedTreeItem?.type === CrossnoteSectionType.Encrypted ? (
+          ) : selectedSection?.type === CrossnoteSectionType.Encrypted ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="encrypted-notes">
                 🔐
@@ -302,7 +291,7 @@ export function NotesPanel(props: Props) {
                 {t("general/encrypted")}
               </Typography>
             </Box>
-          ) : selectedTreeItem?.type === CrossnoteSectionType.Conflicted ? (
+          ) : selectedSection?.type === CrossnoteSectionType.Conflicted ? (
             <Box className={clsx(classes.row)}>
               <span role="img" aria-label="conflicted-notes">
                 ⚠️
@@ -312,13 +301,13 @@ export function NotesPanel(props: Props) {
               </Typography>
             </Box>
           ) : (
-            selectedTreeItem?.type === CrossnoteSectionType.Directory && (
+            selectedSection?.type === CrossnoteSectionType.Directory && (
               <Box className={clsx(classes.row)}>
                 <span role="img" aria-label="folder">
                   {"📁"}
                 </span>
                 <Typography className={clsx(classes.sectionName)}>
-                  {selectedTreeItem.path}
+                  {selectedSection.path}
                 </Typography>
               </Box>
             )

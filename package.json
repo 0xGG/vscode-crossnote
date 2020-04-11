@@ -14,6 +14,7 @@
   "categories": [
     "Other"
   ],
+  "preview": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "vscode:prepublish": "npm run compile",
@@ -26,20 +27,10 @@
     "lint": "tslint -p ./"
   },
   "activationEvents": [
-    "onCommand:extension.helloWorld",
-    "onCommand:extension.testWebview",
     "onView:crossnoteTreeView"
   ],
   "contributes": {
     "commands": [
-      {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
-      },
-      {
-        "command": "extension.testWebview",
-        "title": "Test webview"
-      },
       {
         "command": "crossnote.refreshTreeView",
         "title": "Refresh",
@@ -97,7 +88,6 @@
     "noty": "^3.2.0-beta",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-i18n": "^1.0.1",
     "react-i18next": "^11.3.4",
     "react-lazyload": "^2.6.7",
     "subscriptions-transport-ws": "^0.9.16",

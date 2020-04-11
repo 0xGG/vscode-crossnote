@@ -10,6 +10,7 @@ import { CloudDownloadOutline } from "mdi-material-ui";
 import Noty from "noty";
 import { Skeleton } from "@material-ui/lab";
 import { Note, getHeaderFromMarkdown } from "../../lib/note";
+import { SelectedSection } from "../../lib/section";
 
 export enum OrderBy {
   CreatedAt = "CreatedAt",

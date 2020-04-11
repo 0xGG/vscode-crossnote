@@ -12,3 +12,12 @@ export enum CrossnoteSectionType {
   Tag = "Tag",
   Directory = "Directory",
 }
+
+export interface SelectedSection {
+  path: string;
+  type: CrossnoteSectionType;
+  notebook: {
+    name: string;
+    dir: string;
+  };
+}

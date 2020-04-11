@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { Box, Typography, ButtonBase, Tooltip } from "@material-ui/core";
@@ -8,12 +8,15 @@ import { Pin } from "mdi-material-ui";
 import { formatRelative } from "date-fns";
 import { basename } from "path";
 import { languageCodeToDateFNSLocale } from "../i18n/i18n";
+import { Message, MessageAction } from "../../lib/message";
 import {
   Note,
   Summary,
   getHeaderFromMarkdown,
   generateSummaryFromMarkdown,
 } from "../../lib/note";
+import { vscode } from "../util/util";
+import { SelectedSection } from "../../lib/section";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -99,6 +102,7 @@ interface Props {
 export default function NoteCard(props: Props) {
   const classes = useStyles(props);
   const note = props.note;
+  const selectedSection = props.selectedSection;
   const [header, setHeader] = useState<string>("");
   const [summary, setSummary] = useState<Summary>(null);
   const [images, setImages] = useState<string[]>([]);
@@ -111,6 +115,17 @@ export default function NoteCard(props: Props) {
     .replace(/\sweeks?/, "w")
     .replace(/\smonths?/, "mo")
     .replace(/\syears?/, "y");
+
+  const openNote = useCallback(() => {
+    if (!note) {
+      return;
+    }
+    const message: Message = {
+      action: MessageAction.OpenNote,
+      data: note,
+    };
+    vscode.postMessage(message);
+  }, [note]);
 
   useEffect(() => {
     setHeader(
@@ -158,11 +173,7 @@ export default function NoteCard(props: Props) {
           : classes.unselected
           */
       )}
-      onClick={() => {
-        /*
-        crossnoteContainer.setSelectedNote(note);
-        */
-      }}
+      onClick={openNote}
     >
       <Box className={clsx(classes.leftPanel)}>
         <Tooltip

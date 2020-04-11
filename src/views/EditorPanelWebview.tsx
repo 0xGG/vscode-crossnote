@@ -8,13 +8,13 @@ import { crossnoteTheme } from "./util/theme";
 import "./i18n/i18n";
 import "./index.less";
 
-import Editor from "./components/Editor";
+import EditorPanel from "./components/EditorPanel";
 import { CssBaseline } from "@material-ui/core";
 
 ReactDOM.render(
   <ThemeProvider theme={crossnoteTheme}>
     <CssBaseline></CssBaseline>
-    <Editor></Editor>
+    <EditorPanel></EditorPanel>
   </ThemeProvider>,
 
   document.getElementById("root")

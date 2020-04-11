@@ -188,7 +188,7 @@ export class Crossnote {
     this.notesPanelWebviewPanel.webview.postMessage(message);
   }
 
-  private sendNoteToEditorWebviewPanel() {
+  private async sendNoteToEditorWebviewPanel() {
     if (
       !this.selectedNote ||
       !this.editorPanelWebviewPanel ||
@@ -197,13 +197,20 @@ export class Crossnote {
       return;
     }
 
+    const notebook = this.getNotebookByPath(this.selectedNote.notebookPath);
+    if (!notebook) {
+      return;
+    }
+    const note = await notebook.getNote(this.selectedNote.filePath);
+    if (!note) {
+      return;
+    }
+
     let message: Message = {
       action: MessageAction.SendNote,
-      data: this.selectedNote,
+      data: note,
     };
-    this.editorPanelWebviewPanel.title = path.basename(
-      this.selectedNote.filePath
-    );
+    this.editorPanelWebviewPanel.title = path.basename(note.filePath);
     this.editorPanelWebviewPanel.webview.postMessage(message);
   }
 }

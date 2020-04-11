@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: 0,
       margin: 0,
       boxSizing: "border-box",
-      backgroundColor: "inherit",
+      backgroundColor: theme.palette.background.paper,
     },
     topPanel: {
       position: "relative",

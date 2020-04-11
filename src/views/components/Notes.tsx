@@ -55,6 +55,7 @@ export default function Notes(props: Props) {
   const classes = useStyles(props);
   const { t } = useTranslation();
   const [notes, setNotes] = useState<Note[]>([]);
+  const [selectedNote, setSelectedNote] = useState<Note>(null);
   const [notesListElement, setNotesListElement] = useState<HTMLElement>(null);
   const [forceUpdate, setForceUpdate] = useState<number>(Date.now());
   const searchValue = props.searchValue;
@@ -154,6 +155,9 @@ export default function Notes(props: Props) {
         data: notes[0],
       };
       vscode.postMessage(message);
+      setSelectedNote(notes[0]);
+    } else {
+      setSelectedNote(null);
     }
   }, [notes]);
 
@@ -275,7 +279,12 @@ export default function Notes(props: Props) {
             scrollContainer={notesListElement}
             resize={true}
           >
-            <NoteCard key={"note-card-" + note.filePath} note={note}></NoteCard>
+            <NoteCard
+              key={"note-card-" + note.filePath}
+              note={note}
+              selectedNote={selectedNote}
+              setSelectedNote={setSelectedNote}
+            ></NoteCard>
           </LazyLoad>
         );
       })}

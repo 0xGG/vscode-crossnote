@@ -97,12 +97,13 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props {
   note: Note;
+  selectedNote: Note;
+  setSelectedNote: (note: Note) => void;
 }
 
 export default function NoteCard(props: Props) {
   const classes = useStyles(props);
   const note = props.note;
-  const selectedSection = props.selectedSection;
   const [header, setHeader] = useState<string>("");
   const [summary, setSummary] = useState<Summary>(null);
   const [images, setImages] = useState<string[]>([]);
@@ -125,7 +126,8 @@ export default function NoteCard(props: Props) {
       data: note,
     };
     vscode.postMessage(message);
-  }, [note]);
+    props.setSelectedNote(note);
+  }, [note, props.setSelectedNote]);
 
   useEffect(() => {
     setHeader(
@@ -165,13 +167,12 @@ export default function NoteCard(props: Props) {
   return (
     <ButtonBase
       className={clsx(
-        classes.noteCard
-        /*
-        crossnoteContainer.selectedNote &&
-          crossnoteContainer.selectedNote.filePath === note.filePath
+        classes.noteCard,
+        props.selectedNote &&
+          props.selectedNote.filePath === note.filePath &&
+          props.selectedNote.notebookPath === note.notebookPath
           ? classes.selected
           : classes.unselected
-          */
       )}
       onClick={openNote}
     >

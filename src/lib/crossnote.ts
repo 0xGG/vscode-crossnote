@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import { CrossnoteTreeItem } from "../extension/TreeItem";
 import { createNotesPanelWebviewPanel } from "../extension/NotesPanelWebviewPanel";
 import { Message, MessageAction } from "./message";
@@ -51,6 +52,11 @@ export class Crossnote {
         break;
       case MessageAction.OpenNote:
         this.openEditorPanelWebview(message.data);
+        break;
+      case MessageAction.OpenNoteIfNoNoteSelected:
+        if (!this.selectedNote) {
+          this.openEditorPanelWebview(message.data);
+        }
         break;
       default:
         break;
@@ -195,6 +201,9 @@ export class Crossnote {
       action: MessageAction.SendNote,
       data: this.selectedNote,
     };
+    this.editorPanelWebviewPanel.title = path.basename(
+      this.selectedNote.filePath
+    );
     this.editorPanelWebviewPanel.webview.postMessage(message);
   }
 }

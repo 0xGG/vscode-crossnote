@@ -1,4 +1,8 @@
-// @ts-ignore
-export const vscode = acquireVsCodeApi();
+import { Message } from "../../lib/message";
 
-window["vscode"] = vscode;
+interface VSCodeWebviewAPI {
+  postMessage: (message: Message) => void;
+}
+
+// @ts-ignore
+export const vscode: VSCodeWebviewAPI = acquireVsCodeApi();

@@ -11,6 +11,8 @@ import Noty from "noty";
 import { Skeleton } from "@material-ui/lab";
 import { Note, getHeaderFromMarkdown } from "../../lib/note";
 import { SelectedSection } from "../../lib/section";
+import { Message, MessageAction } from "../../lib/message";
+import { vscode } from "../util/util";
 
 export enum OrderBy {
   CreatedAt = "CreatedAt",
@@ -144,6 +146,16 @@ export default function Notes(props: Props) {
 
     setNotes([...sort(pinned), ...sort(unpinned)]);
   }, [props.notes, searchValue, orderBy, orderDirection]);
+
+  useEffect(() => {
+    if (notes && notes.length) {
+      const message: Message = {
+        action: MessageAction.OpenNoteIfNoNoteSelected,
+        data: notes[0],
+      };
+      vscode.postMessage(message);
+    }
+  }, [notes]);
 
   /*
   useEffect(() => {

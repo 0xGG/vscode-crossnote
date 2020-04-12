@@ -274,9 +274,22 @@ export default function EditorPanel(props: Props) {
     []
   );
 
-  const openURL = useCallback((url: string) => {
-    // TODO:
-  }, []);
+  const openURL = useCallback(
+    (url: string) => {
+      if (!note) {
+        return;
+      }
+      const message: Message = {
+        action: MessageAction.OpenURL,
+        data: {
+          note,
+          url,
+        },
+      };
+      vscode.postMessage(message);
+    },
+    [note]
+  );
 
   const setSelectedSection = useCallback((selectedSection: SelectedSection) => {
     const message: Message = {
@@ -643,6 +656,7 @@ export default function EditorPanel(props: Props) {
             const link = links[i] as HTMLAnchorElement;
             link.onclick = (event) => {
               event.preventDefault();
+              event.stopPropagation();
               if (link.hasAttribute("data-topic")) {
                 const tag = link.getAttribute("data-topic");
                 if (tag.length) {

@@ -4,6 +4,8 @@ import YAML from "yamljs";
 import { Note, NoteConfig, getHeaderFromMarkdown } from "./note";
 import AES from "crypto-js/aes";
 import mkdirp from "mkdirp";
+import { SelectedSection, CrossnoteSectionType } from "./section";
+import { randomID } from "../util/util";
 
 const pfs = fs.promises;
 
@@ -364,6 +366,7 @@ ${markdown}`;
     if (oldNote) {
       oldNote.filePath = newFilePath;
     }
+    return oldNote;
   }
 
   public async duplicateNote(filePath: string) {
@@ -377,6 +380,34 @@ ${markdown}`;
     const newFilePath = filePath.replace(/\.md$/, ".copy.md");
     await this.writeNote(newFilePath, oldNote.markdown, noteConfig);
     const newNote = await this.getNote(newFilePath);
+    if (newNote) {
+      this.notes = [newNote, ...this.notes];
+    }
+    return newNote;
+  }
+
+  public async createNewNote(selectedSection: SelectedSection) {
+    const fileName = "unnamed_" + randomID() + ".md";
+    let filePath;
+    let tags: string[] = [];
+    if (selectedSection.type === CrossnoteSectionType.Tag) {
+      filePath = fileName;
+      tags = [selectedSection.path];
+    } else if (selectedSection.type === CrossnoteSectionType.Directory) {
+      filePath = path.relative(
+        this.dir,
+        path.resolve(this.dir, selectedSection.path, fileName)
+      );
+    } else {
+      filePath = fileName;
+    }
+
+    const noteConfig: NoteConfig = {
+      tags: tags,
+      modifiedAt: new Date(),
+      createdAt: new Date(),
+    };
+    const newNote = await this.writeNote(filePath, "", noteConfig);
     if (newNote) {
       this.notes = [newNote, ...this.notes];
     }

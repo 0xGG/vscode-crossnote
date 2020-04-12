@@ -20,6 +20,7 @@ export enum MessageAction {
   DeleteNote = "DeleteNote",
   ChangeNoteFilePath = "ChangeNoteFilePath",
   DuplicateNote = "DuplicateNote",
+  OpenURL = "OpenURL",
 }
 
 export interface SendNotesMessage {
@@ -114,6 +115,14 @@ export interface DuplicateNoteMessage {
   data: Note;
 }
 
+export interface OpenURLMessage {
+  action: MessageAction.OpenURL;
+  data: {
+    note: Note;
+    url: string;
+  };
+}
+
 export type Message =
   | SendNotesMessage
   | SelectedSectionMessage
@@ -131,4 +140,5 @@ export type Message =
   | SendNotebookTagNodeMessage
   | DeleteNoteMessage
   | ChangeNoteFilePathMessage
-  | DuplicateNoteMessage;
+  | DuplicateNoteMessage
+  | OpenURLMessage;

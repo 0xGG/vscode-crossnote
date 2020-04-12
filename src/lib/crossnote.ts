@@ -1,12 +1,35 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import * as child_process from "child_process";
 import { createNotesPanelWebviewPanel } from "../extension/NotesPanelWebviewPanel";
 import { Message, MessageAction } from "./message";
-import { OneDay, randomID } from "../util/util";
+import { OneDay } from "../util/util";
 import { Notebook } from "./notebook";
 import { CrossnoteSectionType, SelectedSection } from "./section";
 import { createEditorPanelWebviewPanel } from "../extension/EditorPanelWebviewPanel";
-import { Note, NoteConfig } from "./note";
+import { Note } from "./note";
+
+/**
+ * open html file in browser or open pdf file in reader ... etc
+ * @param filePath
+ */
+export function openFile(filePath: string) {
+  if (process.platform === "win32") {
+    if (filePath.match(/^[a-zA-Z]:\\/)) {
+      // C:\ like url.
+      filePath = "file:///" + filePath;
+    }
+    if (filePath.startsWith("file:///")) {
+      child_process.execFile("explorer.exe", [filePath]);
+    } else {
+      child_process.exec(`start ${filePath}`);
+    }
+  } else if (process.platform === "darwin") {
+    child_process.execFile("open", [filePath]);
+  } else {
+    child_process.execFile("xdg-open", [filePath]);
+  }
+}
 
 export class Crossnote {
   public notebooks: Notebook[] = [];
@@ -74,7 +97,19 @@ export class Crossnote {
         }
         break;
       case MessageAction.CreateNewNote:
-        this.createNewNote(message.data);
+        notebook = this.getNotebookByPath(message.data.notebook.dir);
+        if (notebook) {
+          try {
+            const newNote = await notebook.createNewNote(message.data);
+            if (newNote) {
+              // Refresh
+              this.sendNotesToNotesPanelWebview();
+              this.openEditorPanelWebview(newNote);
+            }
+          } catch (error) {
+            vscode.window.showErrorMessage(error.toString());
+          }
+        }
         break;
       case MessageAction.UpdateNote:
         notebook = this.getNotebookByPath(message.data.note.notebookPath);
@@ -110,7 +145,7 @@ export class Crossnote {
         notebook = this.getNotebookByPath(message.data.note.notebookPath);
         if (notebook) {
           try {
-            await notebook.changeNoteFilePath(
+            const note = await notebook.changeNoteFilePath(
               message.data.note,
               message.data.newFilePath
             );
@@ -118,7 +153,9 @@ export class Crossnote {
             // Refresh
             this.refreshTreeView();
             this.sendNotesToNotesPanelWebview();
-            this.openEditorPanelWebview(message.data.note);
+            if (note) {
+              this.openEditorPanelWebview(note);
+            }
           } catch (error) {
             vscode.window.showErrorMessage(error.toString());
           }
@@ -128,14 +165,38 @@ export class Crossnote {
         notebook = this.getNotebookByPath(message.data.notebookPath);
         if (notebook) {
           try {
-            const note = await notebook.duplicateNote(message.data.filePath);
-            if (note) {
+            const newNote = await notebook.duplicateNote(message.data.filePath);
+            if (newNote) {
               // Refresh
               this.sendNotesToNotesPanelWebview();
-              this.openEditorPanelWebview(note);
+              this.openEditorPanelWebview(newNote);
             }
           } catch (error) {
             vscode.window.showErrorMessage(error.toString());
+          }
+        }
+        break;
+      case MessageAction.OpenURL:
+        const note = message.data.note;
+        const url = message.data.url;
+        if (url.trim().length) {
+          if (
+            url.match(/^https?:\/\//) ||
+            url.match(/\.(pdf|xlsx?|docx?|pptx?)$/)
+          ) {
+            openFile(url);
+          } else if (url.match(/^\//)) {
+            const absFilePath = path.join(
+              note.notebookPath,
+              path.relative(
+                note.notebookPath,
+                path.resolve(note.notebookPath, url.replace(/^\//, ""))
+              )
+            );
+            this.openNoteByPath(absFilePath);
+          } else {
+            const absFilePath = path.join(note.notebookPath, url);
+            this.openNoteByPath(absFilePath);
           }
         }
         break;
@@ -183,14 +244,14 @@ export class Crossnote {
     }
   }
 
-  private startNotesPanelRefreshTimer = () => {
+  private startNotesPanelRefreshTimer() {
     setInterval(() => {
       if (this.needsToRefreshNotesPanel) {
         this.sendNotesToNotesPanelWebview();
         this.needsToRefreshNotesPanel = false;
       }
     }, 15000);
-  };
+  }
 
   public async openNoteByPath(absFilePath: string) {
     let note: Note | null = null;
@@ -208,7 +269,7 @@ export class Crossnote {
       this.openEditorPanelWebview(note);
     } else {
       vscode.window.showErrorMessage(
-        "Please save this markdown file and make sure it belongs to a folder in current workspace"
+        `Please make sure ${absFilePath} is saved and belongs to a folder in current workspace`
       );
     }
   }
@@ -403,47 +464,6 @@ export class Crossnote {
         data: note,
       };
       this.notesPanelWebviewPanel.webview.postMessage(message);
-    }
-  }
-
-  private async createNewNote(selectedSection: SelectedSection) {
-    const notebook = this.getNotebookByPath(selectedSection.notebook.dir);
-    if (!notebook) {
-      return;
-    }
-    const fileName = "unnamed_" + randomID() + ".md";
-    let filePath;
-    let tags: string[] = [];
-    if (selectedSection.type === CrossnoteSectionType.Tag) {
-      filePath = fileName;
-      tags = [selectedSection.path];
-    } else if (selectedSection.type === CrossnoteSectionType.Directory) {
-      filePath = path.relative(
-        notebook.dir,
-        path.resolve(notebook.dir, selectedSection.path, fileName)
-      );
-    } else {
-      filePath = fileName;
-    }
-
-    const noteConfig: NoteConfig = {
-      tags: tags,
-      modifiedAt: new Date(),
-      createdAt: new Date(),
-    };
-    await notebook.writeNote(filePath, "", noteConfig);
-
-    if (this.notesPanelWebviewPanel && this.notesPanelWebviewInitialized) {
-      const note = await notebook.getNote(filePath);
-      if (!note) {
-        return;
-      }
-      const message: Message = {
-        action: MessageAction.CreatedNewNote,
-        data: note,
-      };
-      this.notesPanelWebviewPanel.webview.postMessage(message);
-      this.openEditorPanelWebview(note);
     }
   }
 }

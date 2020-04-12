@@ -3,6 +3,7 @@ import * as path from "path";
 import YAML from "yamljs";
 import { Note, NoteConfig, getHeaderFromMarkdown } from "./note";
 import AES from "crypto-js/aes";
+import mkdirp from "mkdirp";
 
 const pfs = fs.promises;
 
@@ -335,6 +336,33 @@ ${markdown}`;
       if (index >= 0) {
         this.notes.splice(index, 1);
       }
+    }
+  }
+
+  public async changeNoteFilePath(note: Note, newFilePath: string) {
+    newFilePath = newFilePath.replace(/^\/+/, "");
+    if (!newFilePath.endsWith(".md")) {
+      newFilePath = newFilePath + ".md";
+    }
+
+    const oldFilePath = note.filePath;
+    const newDirPath = path.dirname(path.resolve(this.dir, newFilePath));
+    await mkdirp(newDirPath);
+
+    // TODO: Check if newFilePath already exists. If so don't overwrite
+    const exists = fs.existsSync(path.resolve(this.dir, newFilePath));
+    if (exists) {
+      throw new Error("Target file already exists");
+    }
+
+    await pfs.rename(
+      path.resolve(this.dir, oldFilePath),
+      path.resolve(this.dir, newFilePath)
+    );
+
+    const oldNote = this.notes.find((n) => n.filePath === oldFilePath);
+    if (oldNote) {
+      oldNote.filePath = newFilePath;
     }
   }
 }

@@ -9,6 +9,8 @@ import {
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { Note } from "../../lib/note";
+import { vscode } from "../util/util";
+import { MessageAction } from "../../lib/message";
 
 interface Props {
   open: boolean;
@@ -35,8 +37,13 @@ export default function ChangeFilePathDialog(props: Props) {
           newFilePath = newFilePath + ".md";
         }
         if (note.filePath !== newFilePath) {
-          // await crossnoteContainer.changeNoteFilePath(note, newFilePath);
-          // TODO:
+          vscode.postMessage({
+            action: MessageAction.ChangeNoteFilePath,
+            data: {
+              note,
+              newFilePath: newFilePath,
+            },
+          });
         }
         props.onClose();
       })();

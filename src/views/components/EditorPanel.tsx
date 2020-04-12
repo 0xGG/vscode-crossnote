@@ -536,6 +536,7 @@ export default function EditorPanel(props: Props) {
       setDecryptionPassword("");
       editor.setOption("readOnly", false);
       editor.setValue(note.markdown);
+      setDecryptionDialogOpen(false);
 
       if (note.markdown.length === 0) {
         setEditorMode(EditorMode.VickyMD);

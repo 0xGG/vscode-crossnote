@@ -101,11 +101,23 @@ export class Crossnote {
             this.editorPanelWebviewInitialized &&
             this.editorPanelWebviewPanel
           ) {
-            this.editorPanelWebviewPanel.webview.postMessage({
-              action: MessageAction.SendNotebookTagNode,
-              data: notebook.rootTagNode,
-            });
+            this.editorPanelWebviewPanel.dispose();
           }
+          this.sendNotesToNotesPanelWebview();
+        }
+        break;
+      case MessageAction.ChangeNoteFilePath:
+        notebook = this.getNotebookByPath(message.data.note.notebookPath);
+        if (notebook) {
+          await notebook.changeNoteFilePath(
+            message.data.note,
+            message.data.newFilePath
+          );
+
+          // Refresh
+          this.refreshTreeView();
+          this.sendNotesToNotesPanelWebview();
+          this.openEditorPanelWebview(message.data.note);
         }
         break;
       default:

@@ -448,6 +448,17 @@ export default function EditorPanel(props: Props) {
     }
   }, [note, editor, decryptionPassword, closeDecryptionDialog]);
 
+  const duplicateNote = useCallback(() => {
+    if (!note) {
+      return;
+    }
+    const message: Message = {
+      action: MessageAction.DuplicateNote,
+      data: note,
+    };
+    vscode.postMessage(message);
+  }, [note]);
+
   useEffect(() => {
     const message: Message = {
       action: MessageAction.InitializedEditorPanelWebview,
@@ -1182,7 +1193,7 @@ export default function EditorPanel(props: Props) {
               <Tooltip title={t("general/create-a-copy")}>
                 <Button
                   className={clsx(classes.controlBtn)}
-                  // onClick={/* () => crossnoteContainer.duplicateNote(note) */}
+                  onClick={duplicateNote}
                 >
                   <ContentDuplicate></ContentDuplicate>
                 </Button>

@@ -5,6 +5,7 @@ import { TagNode } from "./notebook";
 export enum MessageAction {
   SelectedSection = "SelectedSection",
   SetSelectedSection = "SetSelectedSection",
+  SelectedNote = "SelectedNote",
   SendNotes = "SendNotes",
   InitializedNotesPanelWebview = "InitializedNotesPanelWebview",
   InitializedEditorPanelWebview = "InitializedEditorPanelWebview",
@@ -18,6 +19,7 @@ export enum MessageAction {
   SendNotebookTagNode = "SendNotebookTagNode",
   DeleteNote = "DeleteNote",
   ChangeNoteFilePath = "ChangeNoteFilePath",
+  DuplicateNote = "DuplicateNote",
 }
 
 export interface SendNotesMessage {
@@ -33,6 +35,11 @@ export interface SelectedSectionMessage {
 export interface SetSelectedSectionMessage {
   action: MessageAction.SetSelectedSection;
   data: SelectedSection;
+}
+
+export interface SelectedNoteMessage {
+  action: MessageAction.SelectedNote;
+  data: Note;
 }
 
 export interface InitializedNotesPanelWebviewMessage {
@@ -102,10 +109,16 @@ export interface ChangeNoteFilePathMessage {
   };
 }
 
+export interface DuplicateNoteMessage {
+  action: MessageAction.DuplicateNote;
+  data: Note;
+}
+
 export type Message =
   | SendNotesMessage
   | SelectedSectionMessage
   | SetSelectedSectionMessage
+  | SelectedNoteMessage
   | InitializedNotesPanelWebviewMessage
   | InitializedEditorPanelWebviewMessage
   | CreateNewNoteMessage
@@ -117,4 +130,5 @@ export type Message =
   | UpdatedNoteMessage
   | SendNotebookTagNodeMessage
   | DeleteNoteMessage
-  | ChangeNoteFilePathMessage;
+  | ChangeNoteFilePathMessage
+  | DuplicateNoteMessage;

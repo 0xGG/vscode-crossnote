@@ -171,6 +171,7 @@ export function NotesPanel(props: Props) {
   useEffect(() => {
     const onMessage = (event) => {
       const message: Message = event.data;
+      let note: Note;
       switch (message.action) {
         case MessageAction.SelectedSection:
           setSelectedSection(message.data);
@@ -190,12 +191,19 @@ export function NotesPanel(props: Props) {
           setNotes(message.data || []);
           break;
         case MessageAction.CreatedNewNote:
-          const note = message.data;
+          note = message.data;
           note.config.createdAt = new Date(note.config.createdAt || 0);
           note.config.modifiedAt = new Date(note.config.modifiedAt || 0);
 
           setNotes((notes) => [note, ...notes]);
           setSelectedNote(note);
+          break;
+        case MessageAction.SelectedNote:
+          note = message.data;
+          note.config.createdAt = new Date(note.config.createdAt || 0);
+          note.config.modifiedAt = new Date(note.config.modifiedAt || 0);
+          setSelectedNote(note);
+          break;
         default:
           break;
       }

@@ -109,15 +109,34 @@ export class Crossnote {
       case MessageAction.ChangeNoteFilePath:
         notebook = this.getNotebookByPath(message.data.note.notebookPath);
         if (notebook) {
-          await notebook.changeNoteFilePath(
-            message.data.note,
-            message.data.newFilePath
-          );
+          try {
+            await notebook.changeNoteFilePath(
+              message.data.note,
+              message.data.newFilePath
+            );
 
-          // Refresh
-          this.refreshTreeView();
-          this.sendNotesToNotesPanelWebview();
-          this.openEditorPanelWebview(message.data.note);
+            // Refresh
+            this.refreshTreeView();
+            this.sendNotesToNotesPanelWebview();
+            this.openEditorPanelWebview(message.data.note);
+          } catch (error) {
+            vscode.window.showErrorMessage(error.toString());
+          }
+        }
+        break;
+      case MessageAction.DuplicateNote:
+        notebook = this.getNotebookByPath(message.data.notebookPath);
+        if (notebook) {
+          try {
+            const note = await notebook.duplicateNote(message.data.filePath);
+            if (note) {
+              // Refresh
+              this.sendNotesToNotesPanelWebview();
+              this.openEditorPanelWebview(note);
+            }
+          } catch (error) {
+            vscode.window.showErrorMessage(error.toString());
+          }
         }
         break;
       default:
@@ -377,6 +396,14 @@ export class Crossnote {
       data: notebook.rootTagNode,
     };
     this.editorPanelWebviewPanel.webview.postMessage(message);
+
+    if (this.notesPanelWebviewInitialized && this.notesPanelWebviewPanel) {
+      message = {
+        action: MessageAction.SelectedNote,
+        data: note,
+      };
+      this.notesPanelWebviewPanel.webview.postMessage(message);
+    }
   }
 
   private async createNewNote(selectedSection: SelectedSection) {

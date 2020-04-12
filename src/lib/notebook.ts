@@ -365,4 +365,21 @@ ${markdown}`;
       oldNote.filePath = newFilePath;
     }
   }
+
+  public async duplicateNote(filePath: string) {
+    const oldNote = await this.getNote(filePath);
+    if (!oldNote) {
+      return null;
+    }
+    const noteConfig = oldNote.config;
+    noteConfig.createdAt = new Date();
+    noteConfig.modifiedAt = new Date();
+    const newFilePath = filePath.replace(/\.md$/, ".copy.md");
+    await this.writeNote(newFilePath, oldNote.markdown, noteConfig);
+    const newNote = await this.getNote(newFilePath);
+    if (newNote) {
+      this.notes = [newNote, ...this.notes];
+    }
+    return newNote;
+  }
 }

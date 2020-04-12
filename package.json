@@ -1,11 +1,14 @@
 {
   "name": "vscode-crossnote",
   "displayName": "Crossnote",
-  "description": "(WIP) Turn your VSCode into an authentic markdown note taking platform",
+  "description": "(WIP) Turn your VSCode into a decent markdown note taking platform",
   "version": "0.0.1",
   "publisher": "shd101wyy",
   "main": "./out/extension.js",
-  "repository": "git@github.com:0xGG/vscode-crossnote.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xGG/vscode-crossnote.git"
+  },
   "author": "Yiyi Wang <shd101wyy@gmail.com>",
   "license": "AGPL-3.0-or-later",
   "engines": {
@@ -14,6 +17,7 @@
   "categories": [
     "Other"
   ],
+  "icon": "media/logo128.png",
   "preview": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -24,7 +28,8 @@
     "watch": "npm-run-all -p watch:*",
     "watch:extension": "tsc -watch -p ./",
     "watch:views": "webpack --watch --mode development",
-    "lint": "tslint -p ./"
+    "lint": "tslint -p ./",
+    "package": "vsce package --yarn"
   },
   "activationEvents": [
     "onLanguage:markdown",
@@ -106,7 +111,6 @@
     "crypto-js": "^4.0.0",
     "date-fns": "^2.12.0",
     "emoji-mart": "^3.0.0",
-    "graphql": "^15.0.0",
     "i18next": "^19.4.1",
     "identicon.js": "^2.3.3",
     "isomorphic-git": "^1.3.1",
@@ -126,7 +130,6 @@
     "typeface-roboto": "^0.0.75",
     "typescript": "^3.8.3",
     "unstated-next": "^1.1.0",
-    "urql": "^1.9.6",
     "vickymd": "^0.1.15",
     "yamljs": "^0.3.0"
   },
@@ -144,7 +147,7 @@
     "@types/node": "^13.11.1",
     "@types/react": "16.9.32",
     "@types/react-dom": "^16.9.6",
-    "@types/vscode": "^1.44.0",
+    "@types/vscode": "1.43.0",
     "@types/yamljs": "^0.2.30",
     "babel-loader": "^8.1.0",
     "css-loader": "^3.5.2",

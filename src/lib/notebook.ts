@@ -174,7 +174,11 @@ ${markdown}`;
         notes.push(note);
       }
 
-      if (stats.isDirectory() && file !== ".git" && includeSubdirectories) {
+      if (
+        stats.isDirectory() &&
+        !file.match(/^(\.git|node_modules)$/) && // TODO: More directories should be ignored
+        includeSubdirectories
+      ) {
         listNotesPromises.push(
           this.listNotes({
             dir: path.relative(this.dir, absFilePath),

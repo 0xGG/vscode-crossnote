@@ -1,0 +1,22 @@
+.vscode/**
+.vscode-test/**
+out/test/**
+test/**
+src/**
+**/*.map
+.gitignore
+tsconfig.json
+vsc-extension-quickstart.md
+styles/src/**
+webpack.config.js
+**/*.ts
+**/*.tsx
+*.vsix
+
+# Manually include the node modules that we used
+node_modules
+!node_modules/tslib
+!node_modules/yamljs
+!node_modules/crypto-js
+!node_modules/crypto-random-string
+!node_modules/mkdirp

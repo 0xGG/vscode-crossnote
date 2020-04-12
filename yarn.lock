@@ -1155,10 +1155,10 @@
   dependencies:
     source-map "^0.6.1"
 
-"@types/vscode@^1.44.0":
-  version "1.44.0"
-  resolved "https://registry.npm.taobao.org/@types/vscode/download/@types/vscode-1.44.0.tgz#62ecfe3d0e38942fce556574da54ee1013c775b7"
-  integrity sha1-Yuz+PQ44lC/OVWV02lTuEBPHdbc=
+"@types/vscode@1.43.0":
+  version "1.43.0"
+  resolved "https://registry.npm.taobao.org/@types/vscode/download/@types/vscode-1.43.0.tgz#22276e60034c693b33117f1068ffaac0e89522db"
+  integrity sha1-IiduYANMaTszEX8QaP+qwOiVIts=
 
 "@types/webpack-sources@*":
   version "0.1.7"
@@ -1185,13 +1185,6 @@
   version "0.2.30"
   resolved "https://registry.npm.taobao.org/@types/yamljs/download/@types/yamljs-0.2.30.tgz#d034e1d329e46e8d0f737c9a8db97f68f81b5382"
   integrity sha1-0DTh0ynkbo0Pc3yajbl/aPgbU4I=
-
-"@urql/core@^1.10.8":
-  version "1.10.8"
-  resolved "https://registry.npm.taobao.org/@urql/core/download/@urql/core-1.10.8.tgz#bf9ca3baf3722293fade7481cd29c1f5049b9208"
-  integrity sha1-v5yjuvNyIpP63nSBzSnB9QSbkgg=
-  dependencies:
-    wonka "^4.0.9"
 
 "@use-it/interval@^0.1.3":
   version "0.1.3"
@@ -3873,11 +3866,6 @@ graphlib@^2.1.7, graphlib@^2.1.8:
   integrity sha1-V2HUFHN4cAhMkux7XbywWSydNdo=
   dependencies:
     lodash "^4.17.15"
-
-graphql@^15.0.0:
-  version "15.0.0"
-  resolved "https://registry.npm.taobao.org/graphql/download/graphql-15.0.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fgraphql%2Fdownload%2Fgraphql-15.0.0.tgz#042a5eb5e2506a2e2111ce41eb446a8e570b8be9"
-  integrity sha1-BCpeteJQai4hEc5B60RqjlcLi+k=
 
 handle-thing@^2.0.0:
   version "2.0.1"
@@ -7700,14 +7688,6 @@ url@^0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-urql@^1.9.6:
-  version "1.9.6"
-  resolved "https://registry.npm.taobao.org/urql/download/urql-1.9.6.tgz#88590f1f54774190adbdd468457ee7779a60f2e5"
-  integrity sha1-iFkPH1R3QZCtvdRoRX7nd5pg8uU=
-  dependencies:
-    "@urql/core" "^1.10.8"
-    wonka "^4.0.9"
-
 use-memo-one@^1.1.1:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/use-memo-one/download/use-memo-one-1.1.1.tgz#39e6f08fe27e422a7d7b234b5f9056af313bd22c"
@@ -8380,11 +8360,6 @@ which@^1.2.14, which@^1.2.9, which@^1.3.1:
   integrity sha1-pFBD1U9YBTFtqNYvn1CRjT2nCwo=
   dependencies:
     isexe "^2.0.0"
-
-wonka@^4.0.9:
-  version "4.0.9"
-  resolved "https://registry.npm.taobao.org/wonka/download/wonka-4.0.9.tgz#b21d93621e1d5f3b45ca96d99d03711c7c1f7c55"
-  integrity sha1-sh2TYh4dXztFypbZnQNxHHwffFU=
 
 word-wrap@~1.2.3:
   version "1.2.3"

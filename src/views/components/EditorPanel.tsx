@@ -881,7 +881,6 @@ export default function EditorPanel(props: Props) {
 
       // Check tag
       if (
-        notebookTagNode &&
         changeObject.text.length === 1 &&
         changeObject.text[0] !== " " &&
         changeObject.from.ch > 0 &&
@@ -924,7 +923,7 @@ export default function EditorPanel(props: Props) {
                 helper(children[i].children);
               }
             };
-            helper(notebookTagNode.children);
+            helper(notebookTagNode?.children || []);
             const filtered = commands.filter(
               (item) => item.text.toLocaleLowerCase().indexOf(currentWord) >= 0
             );

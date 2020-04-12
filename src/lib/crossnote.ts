@@ -31,6 +31,13 @@ export class Crossnote {
       return nb;
     }
   }
+  public removeNotebook(dir: string) {
+    const index = this.notebooks.findIndex((nb) => nb.dir === dir);
+    if (index >= 0) {
+      this.notebooks.splice(index, 1);
+    }
+    // TODO: Check selectedTreeItem and selectedNote
+  }
 
   public getNotebookByPath(path: string): Notebook | undefined {
     return this.notebooks.find((nb) => nb.dir === path);

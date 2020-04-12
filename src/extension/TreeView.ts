@@ -12,17 +12,14 @@ export class CrossnoteTreeViewProvider
     CrossnoteTreeItem | undefined
   > = this._onDidChangeTreeData.event;
 
-  constructor(
-    private crossnote: Crossnote,
-    private workspaceFolders: readonly vscode.WorkspaceFolder[] | undefined
-  ) {}
+  constructor(private crossnote: Crossnote) {}
 
   getTreeItem(element: CrossnoteTreeItem): vscode.TreeItem {
     return element;
   }
 
   async getChildren(element?: CrossnoteTreeItem): Promise<CrossnoteTreeItem[]> {
-    if (!this.workspaceFolders || !this.workspaceFolders.length) {
+    if (!this.crossnote.notebooks.length) {
       vscode.window.showInformationMessage("Empty");
       return [];
     }
@@ -149,19 +146,14 @@ export class CrossnoteTreeViewProvider
       }
     } else {
       // Read all notebooks
-      return this.workspaceFolders.map((workspaceFolder) => {
-        const notebook = this.crossnote.addNotebook(
-          workspaceFolder.name,
-          workspaceFolder.uri.fsPath
-        );
-        const treeItem = new CrossnoteTreeItem(
-          "📔 " + workspaceFolder.name,
+      return this.crossnote.notebooks.map((notebook) => {
+        return new CrossnoteTreeItem(
+          "📔 " + notebook.name,
           vscode.TreeItemCollapsibleState.Collapsed,
           notebook,
           CrossnoteSectionType.Notebook,
           "." // workspaceFolder.uri.fsPath
         );
-        return treeItem;
       });
     }
   }

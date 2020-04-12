@@ -27,6 +27,7 @@
     "lint": "tslint -p ./"
   },
   "activationEvents": [
+    "onLanguage:markdown",
     "onView:crossnoteTreeView"
   ],
   "contributes": {
@@ -38,6 +39,15 @@
           "light": "media/refresh.svg",
           "dark": "media/refresh.svg"
         }
+      },
+      {
+        "command": "crossnote.openNoteInEditor",
+        "title": "Crossnote: Open Note in Editor",
+        "category": "Markdown",
+        "icon": {
+          "light": "media/logo-light.svg",
+          "dark": "media/logo-dark.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -45,7 +55,7 @@
         {
           "id": "crossnote",
           "title": "Crossnote",
-          "icon": "./logo.svg"
+          "icon": "media/logo.svg"
         }
       ]
     },
@@ -62,6 +72,20 @@
         {
           "command": "crossnote.refreshTreeView",
           "when": "view == crossnoteTreeView",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "crossnote.openNoteInEditor",
+          "when": "editorLangId == markdown",
+          "group": "crossnote"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "crossnote.openNoteInEditor",
+          "when": "editorLangId == markdown",
           "group": "navigation"
         }
       ]

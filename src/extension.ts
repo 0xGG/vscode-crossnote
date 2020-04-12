@@ -8,10 +8,11 @@ import { Crossnote } from "./lib/crossnote";
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   const crossnote = new Crossnote(context);
-  const treeViewProvider = new CrossnoteTreeViewProvider(
-    crossnote,
-    vscode.workspace.workspaceFolders
-  );
+  vscode.workspace.workspaceFolders?.forEach((workspaceFolder) => {
+    crossnote.addNotebook(workspaceFolder.name, workspaceFolder.uri.fsPath);
+  });
+
+  const treeViewProvider = new CrossnoteTreeViewProvider(crossnote);
   const treeView = vscode.window.createTreeView("crossnoteTreeView", {
     treeDataProvider: treeViewProvider,
   });
@@ -20,11 +21,26 @@ export function activate(context: vscode.ExtensionContext) {
       treeViewProvider.refresh();
     })
   );
+  vscode.workspace.onDidChangeWorkspaceFolders((e) => {
+    e.added.forEach((workspaceFolder) => {
+      crossnote.addNotebook(workspaceFolder.name, workspaceFolder.uri.fsPath);
+    });
+    e.removed.forEach((workspaceFolder) => {
+      crossnote.removeNotebook(workspaceFolder.uri.fsPath);
+    });
+    treeViewProvider.refresh();
+  });
   treeView.onDidChangeSelection((e) => {
     if (e.selection.length) {
       crossnote.openNotesPanelWebview(e.selection[0]);
     }
   });
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("crossnote.openNoteInEditor", () => {
+      console.log("Open note");
+    })
+  );
 }
 
 // this method is called when your extension is deactivated

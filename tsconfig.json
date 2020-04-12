@@ -1,0 +1,46 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		// Target latest version of ECMAScript.
+		"target": "es6",
+		// path to output directory
+		"outDir": "./out/",
+		// enable strict null checks as a best practice
+		"strictNullChecks": true,
+		// Search under node_modules for non-relative imports.
+		"moduleResolution": "node",
+		// Process & infer types from .js files.
+		"allowJs": true,
+		// Don't emit; allow Babel to transform files.
+		// "noEmit": true,
+		// Enable strictest settings like strictNullChecks & noImplicitAny.
+		"strict": true,
+		// Import non-ES modules as default imports.
+		"esModuleInterop": true,
+		// use typescript to transpile jsx to js
+		"jsx": "react",
+		// "baseUrl": "./src",
+		"sourceMap": true,
+		"lib": [
+			"es2015",
+			"dom.iterable",
+			"es2016.array.include",
+			"es2017.object",
+			"dom"
+		],
+		"removeComments": true,
+		"alwaysStrict": true,
+		"allowUnreachableCode": false,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"forceConsistentCasingInFileNames": true,
+		"importHelpers": true,
+		"skipLibCheck": true, // HACK: Seems like @types/react causes issue because of conflicts with @types/react-dom
+	},
+	"include": ["./src/**/*"],
+    "exclude": ["node_modules", ".vscode-test", "webpack.config.js", "./src/views"]
+}

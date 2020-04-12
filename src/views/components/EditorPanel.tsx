@@ -45,7 +45,7 @@ import Noty from "noty";
 import * as CryptoJS from "crypto-js";
 import { Message, MessageAction } from "../../lib/message";
 import { TagNode } from "../../lib/notebook";
-import { vscode } from "../util/util";
+import { vscode, resolveNoteImageSrc } from "../util/util";
 import { Note, getHeaderFromMarkdown } from "../../lib/note";
 import { TagStopRegExp } from "../util/markdown";
 import { initMathPreview } from "../editor/views/math-preview";
@@ -620,11 +620,19 @@ export default function EditorPanel(props: Props) {
     };
     editor.on("imageClicked", imageClickedHandler);
 
+    const imageRendered = (args: any) => {
+      const element = args.element;
+      const imageSrc = element.getAttribute("data-src");
+      element.setAttribute("src", resolveNoteImageSrc(note, imageSrc));
+    };
+    editor.on("imageRendered", imageRendered);
+
     return () => {
       editor.off("changes", changesHandler);
       editor.off("keyup", keyupHandler);
       editor.off("linkIconClicked", linkIconClickedHandler);
       editor.off("imageClicked", imageClickedHandler);
+      editor.off("imageRendered", imageRendered);
     };
   }, [editor, note, decryptionPassword, isDecrypted, openURL]);
 
@@ -675,6 +683,16 @@ export default function EditorPanel(props: Props) {
             };
           }
         };
+        const resolveImages = (preview: HTMLElement) => {
+          const images = preview.getElementsByTagName("IMG");
+          for (let i = 0; i < images.length; i++) {
+            const image = images[i] as HTMLImageElement;
+            const imageSrc = image.getAttribute("src");
+            if (imageSrc) {
+              image.setAttribute("src", resolveNoteImageSrc(note, imageSrc));
+            }
+          }
+        };
         renderPreview(previewElement, editor.getValue());
         if (
           previewElement.childElementCount &&
@@ -688,6 +706,10 @@ export default function EditorPanel(props: Props) {
             (previewElement.children[0] as HTMLIFrameElement).contentDocument
               .body as HTMLElement
           );
+          resolveImages(
+            (previewElement.children[0] as HTMLIFrameElement).contentDocument
+              .body as HTMLElement
+          );
           setPreviewIsPresentation(true);
         } else {
           // normal
@@ -695,6 +717,7 @@ export default function EditorPanel(props: Props) {
           previewElement.style.height = "100%";
           previewElement.style.overflow = "hidden !important";
           handleLinksClickEvent(previewElement);
+          resolveImages(previewElement);
           setPreviewIsPresentation(false);
         }
       } else {
@@ -1374,6 +1397,7 @@ export default function EditorPanel(props: Props) {
         editor={editor}
         imageElement={editImageElement}
         marker={editImageTextMarker}
+        note={note}
       ></EditImageDialog>
 
       <Dialog open={toggleEncryptionDialogOpen} onClose={closeEncryptionDialog}>

@@ -15,7 +15,7 @@ import {
   getHeaderFromMarkdown,
   generateSummaryFromMarkdown,
 } from "../../lib/note";
-import { vscode } from "../util/util";
+import { vscode, resolveNoteImageSrc } from "../util/util";
 import { SelectedSection } from "../../lib/section";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -144,7 +144,10 @@ export default function NoteCard(props: Props) {
 
         // render images
         const images = summary.images
-          .filter((image) => image.startsWith("https://"))
+          .map((image) => {
+            return resolveNoteImageSrc(note, image);
+          })
+          .filter((x) => x)
           .slice(0, 3); // TODO: Support local image
         setImages(images);
       })

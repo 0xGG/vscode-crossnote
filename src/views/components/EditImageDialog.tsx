@@ -12,6 +12,8 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { Editor as CodeMirrorEditor, TextMarker } from "codemirror";
 import { useTranslation } from "react-i18next";
+import { Note } from "../../lib/note";
+import { resolveNoteImageSrc } from "../util/util";
 
 interface Props {
   open: boolean;
@@ -19,6 +21,7 @@ interface Props {
   editor: CodeMirrorEditor;
   marker: TextMarker;
   imageElement: HTMLImageElement;
+  note: Note;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -99,7 +102,7 @@ export default function EditImageDialog(props: Props) {
         <Box className={clsx(classes.imageWrapper)}>
           <img
             className={clsx(classes.imagePreview)}
-            src={imageSrc}
+            src={resolveNoteImageSrc(props.note, imageSrc)}
             alt={imageAlt}
             title={imageTitle}
           ></img>{" "}

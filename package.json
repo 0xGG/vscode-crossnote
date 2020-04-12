@@ -127,7 +127,7 @@
     "typescript": "^3.8.3",
     "unstated-next": "^1.1.0",
     "urql": "^1.9.6",
-    "vickymd": "^0.1.14",
+    "vickymd": "^0.1.15",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

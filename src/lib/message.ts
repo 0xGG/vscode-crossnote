@@ -1,5 +1,6 @@
 import { Note } from "./note";
 import { SelectedSection } from "./section";
+import { TagNode } from "./notebook";
 
 export enum MessageAction {
   SelectedTreeItem = "SelectedTreeItem",
@@ -11,6 +12,9 @@ export enum MessageAction {
   OpenNote = "OpenNote",
   OpenNoteIfNoNoteSelected = "OpenNoteIfNoNoteSelected",
   SendNote = "SendNote",
+  UpdateNote = "UpdateNote",
+  UpdatedNote = "UpdatedNote",
+  SendNotebookTagNode = "SendNotebookTagNode",
 }
 
 export interface SendNotesMessage {
@@ -58,6 +62,25 @@ export interface SendNoteMessage {
   data: Note;
 }
 
+export interface UpdateNoteMessage {
+  action: MessageAction.UpdateNote;
+  data: {
+    note: Note;
+    markdown: string;
+    password: string;
+  };
+}
+
+export interface UpdatedNoteMessage {
+  action: MessageAction.UpdatedNote;
+  data: Note;
+}
+
+export interface SendNotebookTagNodeMessage {
+  action: MessageAction.SendNotebookTagNode;
+  data: TagNode | undefined;
+}
+
 export type Message =
   | SendNotesMessage
   | SelectedTreeItemMessage
@@ -67,4 +90,7 @@ export type Message =
   | CreatedNewNoteMessage
   | OpenNoteMessage
   | OpenNoteIfNoNoteSelected
-  | SendNoteMessage;
+  | SendNoteMessage
+  | UpdateNoteMessage
+  | UpdatedNoteMessage
+  | SendNotebookTagNodeMessage;

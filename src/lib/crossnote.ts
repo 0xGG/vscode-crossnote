@@ -16,11 +16,14 @@ export class Crossnote {
   private notesPanelWebviewInitialized: boolean = false;
   private editorPanelWebviewPanel: vscode.WebviewPanel | undefined;
   private editorPanelWebviewInitialized: boolean = false;
+  private needsToRefreshNotesPanel: boolean = false;
 
   private selectedTreeItem: CrossnoteTreeItem | undefined;
   private selectedNote: Note | undefined;
 
-  constructor(private context: vscode.ExtensionContext) {}
+  constructor(private context: vscode.ExtensionContext) {
+    this.startNotesPanelRefreshTimer();
+  }
   public addNotebook(name: string, dir: string): Notebook {
     let nb = this.notebooks.find((nb) => nb.dir === dir);
     if (!nb) {
@@ -68,8 +71,85 @@ export class Crossnote {
       case MessageAction.CreateNewNote:
         this.createNewNote(message.data);
         break;
+      case MessageAction.UpdateNote:
+        const notebook = this.getNotebookByPath(message.data.note.notebookPath);
+        if (notebook) {
+          const { note, markdown, password } = message.data;
+          notebook
+            .writeNote(note.filePath, markdown, note.config, password)
+            .then((newNote) => {
+              this.checkToRefreshNotesPanel(notebook, newNote);
+              // TODO: Check if necessary to update TagNodes
+            });
+        }
+        break;
       default:
         break;
+    }
+  }
+
+  private checkToRefreshNotesPanel(notebook: Notebook, newNote: Note) {
+    if (!notebook || !newNote) {
+      return;
+    }
+    const oldNote = notebook.notes.find((n) => n.filePath === newNote.filePath);
+    if (oldNote) {
+      oldNote.config = newNote.config;
+      oldNote.markdown = newNote.markdown;
+      this.needsToRefreshNotesPanel = true;
+    }
+  }
+
+  private startNotesPanelRefreshTimer = () => {
+    setInterval(() => {
+      if (this.needsToRefreshNotesPanel) {
+        this.sendNotesToNotesPanelWebview();
+        this.needsToRefreshNotesPanel = false;
+      }
+    }, 15000);
+  };
+
+  public async openNoteByPath(absFilePath: string) {
+    let note: Note | null = null;
+    for (let i = 0; i < this.notebooks.length; i++) {
+      const notebook = this.notebooks[i];
+      if (absFilePath.startsWith(notebook.dir)) {
+        note = await notebook.getNote(path.relative(notebook.dir, absFilePath));
+        if (note) {
+          break;
+        }
+      }
+    }
+
+    if (note) {
+      this.openEditorPanelWebview(note);
+    } else {
+      vscode.window.showErrorMessage(
+        "Please save this markdown file and make sure it belongs to a folder in current workspace"
+      );
+    }
+  }
+
+  public async updateNoteMarkdownIfNecessary(uri: vscode.Uri) {
+    if (
+      this.editorPanelWebviewInitialized &&
+      this.editorPanelWebviewPanel &&
+      this.selectedNote &&
+      path.normalize(
+        path.join(this.selectedNote.notebookPath, this.selectedNote.filePath)
+      ) === path.normalize(uri.fsPath)
+    ) {
+      const notebook = this.getNotebookByPath(this.selectedNote.notebookPath);
+      const note = await notebook?.getNote(this.selectedNote.filePath);
+      if (notebook && note) {
+        const message: Message = {
+          action: MessageAction.UpdatedNote,
+          data: note,
+        };
+        this.editorPanelWebviewPanel.webview.postMessage(message);
+
+        this.checkToRefreshNotesPanel(notebook, note);
+      }
     }
   }
 
@@ -222,12 +302,21 @@ export class Crossnote {
     if (!note) {
       return;
     }
+    this.editorPanelWebviewPanel.title = path.basename(note.filePath);
 
     let message: Message = {
       action: MessageAction.SendNote,
       data: note,
     };
-    this.editorPanelWebviewPanel.title = path.basename(note.filePath);
+    this.editorPanelWebviewPanel.webview.postMessage(message);
+
+    if (!notebook.rootTagNode) {
+      await notebook.initData();
+    }
+    message = {
+      action: MessageAction.SendNotebookTagNode,
+      data: notebook.rootTagNode,
+    };
     this.editorPanelWebviewPanel.webview.postMessage(message);
   }
 

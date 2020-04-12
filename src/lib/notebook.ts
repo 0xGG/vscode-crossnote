@@ -91,7 +91,8 @@ ${markdown}`;
 
   public async getNote(
     filePath: string,
-    stats?: fs.Stats
+    stats?: fs.Stats,
+    notFullMarkdown?: boolean
   ): Promise<Note | null> {
     const absFilePath = path.resolve(this.dir, filePath);
     if (!stats) {
@@ -131,7 +132,7 @@ ${markdown}`;
       const note: Note = {
         notebookPath: this.dir,
         filePath: path.relative(this.dir, absFilePath),
-        markdown,
+        markdown: notFullMarkdown ? markdown.slice(0, 1000) : markdown,
         config: noteConfig,
       };
       return note;
@@ -159,7 +160,8 @@ ${markdown}`;
       const stats = await pfs.stat(absFilePath);
       const note = await this.getNote(
         path.relative(this.dir, absFilePath),
-        stats
+        stats,
+        true
       );
       if (note) {
         notes.push(note);
@@ -273,9 +275,10 @@ ${markdown}`;
     markdown: string,
     noteConfig: NoteConfig,
     password?: string
-  ): Promise<NoteConfig> {
+  ): Promise<Note> {
     noteConfig.modifiedAt = new Date();
-
+    noteConfig.createdAt = new Date(noteConfig.createdAt);
+    let newNote: Note;
     try {
       const data = this.matter(markdown);
       if (data.data["note"] && data.data["note"] instanceof Object) {
@@ -291,6 +294,12 @@ ${markdown}`;
           password || ""
         ).toString();
       }
+      newNote = {
+        config: noteConfig,
+        markdown: markdown, // <= The markdown here is actually wrong, but it doesn't matter
+        notebookPath: this.dir,
+        filePath: filePath,
+      };
       markdown = this.matterStringify(markdown, frontMatter);
     } catch (error) {
       if (noteConfig.encryption) {
@@ -301,10 +310,16 @@ ${markdown}`;
           password || ""
         ).toString();
       }
+      newNote = {
+        config: noteConfig,
+        markdown: markdown,
+        notebookPath: this.dir,
+        filePath: filePath,
+      };
       markdown = this.matterStringify(markdown, { note: noteConfig });
     }
 
     await pfs.writeFile(path.resolve(this.dir, filePath), markdown);
-    return noteConfig;
+    return newNote;
   }
 }

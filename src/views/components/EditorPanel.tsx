@@ -258,10 +258,19 @@ export default function EditorPanel(props: Props) {
     false
   );
   const [notebookTagNode, setNotebookTagNode] = useState<TagNode>(null);
+  const [forceUpdate, setForceUpdate] = useState<number>(Date.now());
 
-  const updateNoteMarkdown = useCallback(
+  const updateNote = useCallback(
     (note: Note, markdown: string, password: string = "") => {
       // TODO:
+      vscode.postMessage({
+        action: MessageAction.UpdateNote,
+        data: {
+          note,
+          markdown,
+          password,
+        },
+      });
     },
     []
   );
@@ -297,11 +306,12 @@ export default function EditorPanel(props: Props) {
       if (!note.config.pinned) {
         delete note.config.pinned;
       }
-      updateNoteMarkdown(
+      updateNote(
         note,
         editor.getValue(),
         note.config.encryption ? decryptionPassword : ""
       );
+      setForceUpdate(Date.now());
     }
   }, [note, editor, decryptionPassword, isDecrypted]);
 
@@ -325,7 +335,7 @@ export default function EditorPanel(props: Props) {
         const newTagNames =
           tagNames.indexOf(tag) >= 0 ? [...tagNames] : [tag, ...tagNames];
         note.config.tags = newTagNames.sort((x, y) => x.localeCompare(y));
-        updateNoteMarkdown(
+        updateNote(
           note,
           editor.getValue(),
           note.config.encryption ? decryptionPassword : ""
@@ -344,7 +354,7 @@ export default function EditorPanel(props: Props) {
         setTagNames((tagNames) => {
           const newTagNames = tagNames.filter((t) => t !== tagName);
           note.config.tags = newTagNames.sort((x, y) => x.localeCompare(y));
-          updateNoteMarkdown(
+          updateNote(
             note,
             editor.getValue(),
             note.config.encryption ? decryptionPassword : ""
@@ -374,11 +384,11 @@ export default function EditorPanel(props: Props) {
         // Disable encryption
         note.config.encryption = null;
         delete note.config.encryption;
-        updateNoteMarkdown(note, json.markdown, "");
+        updateNote(note, json.markdown, "");
         setDecryptionPassword("");
         setIsDecrypted(true);
         closeEncryptionDialog();
-        editor.setValue(json.markdown);
+        // editor.setValue(json.markdown);
         editor.setOption("readOnly", false);
       } catch (error) {
         new Noty({
@@ -394,7 +404,7 @@ export default function EditorPanel(props: Props) {
       note.config.encryption = {
         title: getHeaderFromMarkdown(markdown),
       };
-      updateNoteMarkdown(note, editor.getValue(), toggleEncryptionPassword);
+      updateNote(note, editor.getValue(), toggleEncryptionPassword);
       setDecryptionPassword(toggleEncryptionPassword);
       setIsDecrypted(true);
       closeEncryptionDialog();
@@ -456,6 +466,11 @@ export default function EditorPanel(props: Props) {
         case MessageAction.SendNote:
           setNote(message.data);
           break;
+        case MessageAction.UpdatedNote:
+          setNote(message.data);
+          break;
+        case MessageAction.SendNotebookTagNode:
+          setNotebookTagNode(message.data);
         default:
           break;
       }
@@ -542,7 +557,7 @@ export default function EditorPanel(props: Props) {
       if (!note.config.encryption && markdown === note.markdown) {
         return;
       }
-      updateNoteMarkdown(
+      updateNote(
         note,
         markdown,
         note.config.encryption ? decryptionPassword : ""

@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "typeface-roboto";
 import "typeface-noto-sans-sc";
+import "noty/lib/noty.css";
+import "noty/lib/themes/relax.css";
 import { ThemeProvider } from "@material-ui/styles";
 import "./editor/index";
 import { crossnoteTheme } from "./util/theme";

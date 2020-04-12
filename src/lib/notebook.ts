@@ -54,6 +54,10 @@ export class Notebook {
     this.rootTagNode = res[1];
   }
 
+  public async refreshRootTagNode() {
+    this.rootTagNode = await this.getNotebookTagNodeFromNotes(this.notes);
+  }
+
   private matter(markdown: string): MatterOutput {
     let endFrontMatterOffset = 0;
     let frontMatter = {};

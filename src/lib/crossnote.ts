@@ -21,8 +21,13 @@ export class Crossnote {
   private selectedTreeItem: CrossnoteTreeItem | undefined;
   private selectedNote: Note | undefined;
 
+  private refreshTreeView: () => void = () => {};
+
   constructor(private context: vscode.ExtensionContext) {
     this.startNotesPanelRefreshTimer();
+  }
+  public bindTreeViewRefresh(refreshTreeView: () => void) {
+    this.refreshTreeView = refreshTreeView;
   }
   public addNotebook(name: string, dir: string): Notebook {
     let nb = this.notebooks.find((nb) => nb.dir === dir);
@@ -78,7 +83,7 @@ export class Crossnote {
           notebook
             .writeNote(note.filePath, markdown, note.config, password)
             .then((newNote) => {
-              this.checkToRefreshNotesPanel(notebook, newNote);
+              this.checkToRefresh(notebook, newNote);
               // TODO: Check if necessary to update TagNodes
             });
         }
@@ -88,15 +93,35 @@ export class Crossnote {
     }
   }
 
-  private checkToRefreshNotesPanel(notebook: Notebook, newNote: Note) {
+  private async checkToRefresh(notebook: Notebook, newNote: Note) {
     if (!notebook || !newNote) {
       return;
     }
     const oldNote = notebook.notes.find((n) => n.filePath === newNote.filePath);
-    if (oldNote) {
-      oldNote.config = newNote.config;
-      oldNote.markdown = newNote.markdown;
-      this.needsToRefreshNotesPanel = true;
+    if (!oldNote) {
+      return;
+    }
+
+    let needsToRefreshTagNode = false;
+    if (oldNote.config.tags?.join(".") !== newNote.config.tags?.join(".")) {
+      needsToRefreshTagNode = true;
+    }
+
+    oldNote.config = newNote.config;
+    oldNote.markdown = newNote.markdown;
+    this.needsToRefreshNotesPanel = true;
+
+    if (needsToRefreshTagNode) {
+      await notebook.refreshRootTagNode();
+      if (this.editorPanelWebviewInitialized && this.editorPanelWebviewPanel) {
+        this.editorPanelWebviewPanel.webview.postMessage({
+          action: MessageAction.SendNotebookTagNode,
+          data: notebook.rootTagNode,
+        });
+      }
+
+      // Refresh tree view
+      this.refreshTreeView();
     }
   }
 
@@ -148,7 +173,7 @@ export class Crossnote {
         };
         this.editorPanelWebviewPanel.webview.postMessage(message);
 
-        this.checkToRefreshNotesPanel(notebook, note);
+        this.checkToRefresh(notebook, note);
       }
     }
   }

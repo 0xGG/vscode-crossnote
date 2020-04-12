@@ -23,6 +23,9 @@ export function activate(context: vscode.ExtensionContext) {
   const treeView = vscode.window.createTreeView("crossnoteTreeView", {
     treeDataProvider: treeViewProvider,
   });
+  crossnote.bindTreeViewRefresh(() => {
+    treeViewProvider.refresh();
+  });
   context.subscriptions.push(
     vscode.commands.registerCommand("crossnote.refreshTreeView", () => {
       treeViewProvider.refresh();

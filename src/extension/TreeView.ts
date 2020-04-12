@@ -20,7 +20,7 @@ export class CrossnoteTreeViewProvider
 
   async getChildren(element?: CrossnoteTreeItem): Promise<CrossnoteTreeItem[]> {
     if (!this.crossnote.notebooks.length) {
-      vscode.window.showInformationMessage("Empty");
+      vscode.window.showInformationMessage("No notebooks found");
       return [];
     }
 

@@ -107,3 +107,4 @@ dist
 # Crossnote
 out
 *.vsix
+*.zip

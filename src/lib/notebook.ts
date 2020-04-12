@@ -176,7 +176,7 @@ ${markdown}`;
 
       if (
         stats.isDirectory() &&
-        !file.match(/^(\.git|node_modules)$/) && // TODO: More directories should be ignored
+        !file.match(/^(\.git|node_modules)$/) && // TODO: More directories should be ignored. Should match .gitignore
         includeSubdirectories
       ) {
         listNotesPromises.push(

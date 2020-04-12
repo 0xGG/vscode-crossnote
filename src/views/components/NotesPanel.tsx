@@ -172,7 +172,7 @@ export function NotesPanel(props: Props) {
     const onMessage = (event) => {
       const message: Message = event.data;
       switch (message.action) {
-        case MessageAction.SelectedTreeItem:
+        case MessageAction.SelectedSection:
           setSelectedSection(message.data);
           if (
             selectedSection &&

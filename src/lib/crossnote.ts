@@ -18,7 +18,7 @@ export class Crossnote {
   private editorPanelWebviewInitialized: boolean = false;
   private needsToRefreshNotesPanel: boolean = false;
 
-  private selectedTreeItem: CrossnoteTreeItem | undefined;
+  private selectedSection: SelectedSection | undefined;
   private selectedNote: Note | undefined;
 
   private refreshTreeView: () => void = () => {};
@@ -44,7 +44,7 @@ export class Crossnote {
     if (index >= 0) {
       this.notebooks.splice(index, 1);
     }
-    // TODO: Check selectedTreeItem and selectedNote
+    // TODO: Check selectedSection and selectedNote
   }
 
   public getNotebookByPath(path: string): Notebook | undefined {
@@ -52,7 +52,7 @@ export class Crossnote {
   }
 
   public refreshNotesPanelWebview() {
-    this.openNotesPanelWebview(this.selectedTreeItem);
+    this.openNotesPanelWebview(this.selectedSection);
   }
 
   private onDidReceiveMessage(message: Message) {
@@ -87,6 +87,9 @@ export class Crossnote {
               // TODO: Check if necessary to update TagNodes
             });
         }
+        break;
+      case MessageAction.SetSelectedSection:
+        this.openNotesPanelWebview(message.data);
         break;
       default:
         break;
@@ -178,10 +181,8 @@ export class Crossnote {
     }
   }
 
-  public openNotesPanelWebview(
-    selectedTreeItem: CrossnoteTreeItem | undefined
-  ) {
-    if (!selectedTreeItem) {
+  public openNotesPanelWebview(selectedSection: SelectedSection | undefined) {
+    if (!selectedSection) {
       return;
     }
     if (!this.notesPanelWebviewPanel) {
@@ -201,7 +202,7 @@ export class Crossnote {
       this.notesPanelWebviewPanel.reveal(vscode.ViewColumn.One);
     }
 
-    this.selectedTreeItem = selectedTreeItem;
+    this.selectedSection = selectedSection;
     this.sendNotesToNotesPanelWebview();
   }
 
@@ -229,63 +230,67 @@ export class Crossnote {
 
   private sendNotesToNotesPanelWebview() {
     if (
-      !this.selectedTreeItem ||
+      !this.selectedSection ||
       !this.notesPanelWebviewPanel ||
       !this.notesPanelWebviewInitialized
     ) {
       return;
     }
 
-    let notes = this.selectedTreeItem.notebook.notes || [];
+    const notebook = this.getNotebookByPath(this.selectedSection.notebook.dir);
+    if (!notebook) {
+      return;
+    }
+    let notes = notebook.notes || [];
     if (
-      this.selectedTreeItem.type === CrossnoteSectionType.Notes ||
-      this.selectedTreeItem.type === CrossnoteSectionType.Notebook
+      this.selectedSection.type === CrossnoteSectionType.Notes ||
+      this.selectedSection.type === CrossnoteSectionType.Notebook
     ) {
       // Do nothing
-    } else if (this.selectedTreeItem.type === CrossnoteSectionType.Todo) {
+    } else if (this.selectedSection.type === CrossnoteSectionType.Todo) {
       notes = notes.filter((note) =>
         note.markdown.match(/(\*|-|\d+\.)\s\[(\s+|x|X)\]\s/gm)
       );
-    } else if (this.selectedTreeItem.type === CrossnoteSectionType.Today) {
+    } else if (this.selectedSection.type === CrossnoteSectionType.Today) {
       notes = notes.filter(
         (note) => Date.now() - note.config.modifiedAt.getTime() <= OneDay
       );
-    } else if (this.selectedTreeItem.type === CrossnoteSectionType.Tagged) {
+    } else if (this.selectedSection.type === CrossnoteSectionType.Tagged) {
       notes = notes.filter(
         (note) => note.config.tags && note.config.tags.length > 0
       );
-    } else if (this.selectedTreeItem.type === CrossnoteSectionType.Untagged) {
+    } else if (this.selectedSection.type === CrossnoteSectionType.Untagged) {
       notes = notes.filter(
         (note) => note.config.tags && note.config.tags.length === 0
       );
-    } else if (this.selectedTreeItem.type === CrossnoteSectionType.Tag) {
+    } else if (this.selectedSection.type === CrossnoteSectionType.Tag) {
       notes = notes.filter((note) => {
         const tags = note.config.tags || [];
         return tags.find(
           (tag) =>
             (tag.toLocaleLowerCase() + "/").indexOf(
               // @ts-ignore
-              this.selectedTreeItem.path + "/"
+              this.selectedSection.path + "/"
             ) === 0
         );
       });
-    } else if (this.selectedTreeItem.type === CrossnoteSectionType.Encrypted) {
+    } else if (this.selectedSection.type === CrossnoteSectionType.Encrypted) {
       notes = notes.filter((note) => {
         return note.config.encryption;
       });
-    } else if (this.selectedTreeItem.type === CrossnoteSectionType.Wiki) {
+    } else if (this.selectedSection.type === CrossnoteSectionType.Wiki) {
       // Do nothing here
     } else {
       // CrossnoteSectionType.Directory
       notes = notes.filter(
         // @ts-ignore
-        (note) => note.filePath.indexOf(this.selectedTreeItem.path + "/") === 0
+        (note) => note.filePath.indexOf(this.selectedSection.path + "/") === 0
       );
     }
 
     if (
       this.selectedNote &&
-      this.selectedNote.notebookPath !== this.selectedTreeItem.notebook.dir
+      this.selectedNote.notebookPath !== this.selectedSection.notebook.dir
     ) {
       this.selectedNote = undefined;
     }
@@ -297,15 +302,8 @@ export class Crossnote {
     this.notesPanelWebviewPanel.webview.postMessage(message);
 
     message = {
-      action: MessageAction.SelectedTreeItem,
-      data: {
-        path: this.selectedTreeItem.path,
-        type: this.selectedTreeItem.type,
-        notebook: {
-          name: this.selectedTreeItem.notebook.name,
-          dir: this.selectedTreeItem.notebook.dir,
-        },
-      },
+      action: MessageAction.SelectedSection,
+      data: this.selectedSection,
     };
     this.notesPanelWebviewPanel.webview.postMessage(message);
   }

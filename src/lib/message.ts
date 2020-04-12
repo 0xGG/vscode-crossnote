@@ -3,7 +3,8 @@ import { SelectedSection } from "./section";
 import { TagNode } from "./notebook";
 
 export enum MessageAction {
-  SelectedTreeItem = "SelectedTreeItem",
+  SelectedSection = "SelectedSection",
+  SetSelectedSection = "SetSelectedSection",
   SendNotes = "SendNotes",
   InitializedNotesPanelWebview = "InitializedNotesPanelWebview",
   InitializedEditorPanelWebview = "InitializedEditorPanelWebview",
@@ -22,8 +23,13 @@ export interface SendNotesMessage {
   data: Note[];
 }
 
-export interface SelectedTreeItemMessage {
-  action: MessageAction.SelectedTreeItem;
+export interface SelectedSectionMessage {
+  action: MessageAction.SelectedSection;
+  data: SelectedSection;
+}
+
+export interface SetSelectedSectionMessage {
+  action: MessageAction.SetSelectedSection;
   data: SelectedSection;
 }
 
@@ -83,7 +89,8 @@ export interface SendNotebookTagNodeMessage {
 
 export type Message =
   | SendNotesMessage
-  | SelectedTreeItemMessage
+  | SelectedSectionMessage
+  | SetSelectedSectionMessage
   | InitializedNotesPanelWebviewMessage
   | InitializedEditorPanelWebviewMessage
   | CreateNewNoteMessage

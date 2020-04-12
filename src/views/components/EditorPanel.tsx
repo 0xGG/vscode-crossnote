@@ -262,7 +262,6 @@ export default function EditorPanel(props: Props) {
 
   const updateNote = useCallback(
     (note: Note, markdown: string, password: string = "") => {
-      // TODO:
       vscode.postMessage({
         action: MessageAction.UpdateNote,
         data: {
@@ -280,7 +279,11 @@ export default function EditorPanel(props: Props) {
   }, []);
 
   const setSelectedSection = useCallback((selectedSection: SelectedSection) => {
-    // TODO:
+    const message: Message = {
+      action: MessageAction.SetSelectedSection,
+      data: selectedSection,
+    };
+    vscode.postMessage(message);
   }, []);
 
   const closeFilePathDialog = useCallback(() => {

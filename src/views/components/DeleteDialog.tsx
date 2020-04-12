@@ -9,6 +9,8 @@ import {
 } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { Note } from "../../lib/note";
+import { vscode } from "../util/util";
+import { MessageAction } from "../../lib/message";
 
 interface Props {
   open: boolean;
@@ -20,7 +22,10 @@ export function DeleteDialog(props: Props) {
   const note = props.note;
 
   const deleteNote = useCallback((note: Note) => {
-    // TODO
+    vscode.postMessage({
+      action: MessageAction.DeleteNote,
+      data: note,
+    });
   }, []);
 
   return (

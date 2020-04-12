@@ -326,4 +326,15 @@ ${markdown}`;
     await pfs.writeFile(path.resolve(this.dir, filePath), markdown);
     return newNote;
   }
+
+  public deleteNote(note: Note) {
+    if (fs.existsSync(path.resolve(this.dir, note.filePath))) {
+      fs.unlinkSync(path.resolve(this.dir, note.filePath));
+
+      const index = this.notes.findIndex((n) => n.filePath === note.filePath);
+      if (index >= 0) {
+        this.notes.splice(index, 1);
+      }
+    }
+  }
 }

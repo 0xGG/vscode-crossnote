@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { CrossnoteTreeItem } from "../extension/TreeItem";
 import { createNotesPanelWebviewPanel } from "../extension/NotesPanelWebviewPanel";
 import { Message, MessageAction } from "./message";
 import { OneDay, randomID } from "../util/util";
@@ -55,7 +54,8 @@ export class Crossnote {
     this.openNotesPanelWebview(this.selectedSection);
   }
 
-  private onDidReceiveMessage(message: Message) {
+  private async onDidReceiveMessage(message: Message) {
+    let notebook: Notebook | undefined;
     switch (message.action) {
       case MessageAction.InitializedNotesPanelWebview:
         this.notesPanelWebviewInitialized = true;
@@ -77,37 +77,60 @@ export class Crossnote {
         this.createNewNote(message.data);
         break;
       case MessageAction.UpdateNote:
-        const notebook = this.getNotebookByPath(message.data.note.notebookPath);
+        notebook = this.getNotebookByPath(message.data.note.notebookPath);
         if (notebook) {
           const { note, markdown, password } = message.data;
           notebook
             .writeNote(note.filePath, markdown, note.config, password)
             .then((newNote) => {
               this.checkToRefresh(notebook, newNote);
-              // TODO: Check if necessary to update TagNodes
             });
         }
         break;
       case MessageAction.SetSelectedSection:
         this.openNotesPanelWebview(message.data);
         break;
+      case MessageAction.DeleteNote:
+        notebook = this.getNotebookByPath(message.data.notebookPath);
+        if (notebook) {
+          notebook.deleteNote(message.data);
+
+          // Refresh
+          this.refreshTreeView();
+          if (
+            this.editorPanelWebviewInitialized &&
+            this.editorPanelWebviewPanel
+          ) {
+            this.editorPanelWebviewPanel.webview.postMessage({
+              action: MessageAction.SendNotebookTagNode,
+              data: notebook.rootTagNode,
+            });
+          }
+        }
+        break;
       default:
         break;
     }
   }
 
-  private async checkToRefresh(notebook: Notebook, newNote: Note) {
+  private async checkToRefresh(notebook: Notebook | undefined, newNote: Note) {
     if (!notebook || !newNote) {
       return;
     }
-    const oldNote = notebook.notes.find((n) => n.filePath === newNote.filePath);
+    let needsToRefreshTagNode = false;
+    let needsToRefreshTreeView = false;
+    let oldNote = notebook.notes.find((n) => n.filePath === newNote.filePath);
     if (!oldNote) {
+      notebook.notes = [newNote, ...notebook.notes];
+      oldNote = newNote;
+      needsToRefreshTagNode = true;
+      needsToRefreshTreeView = true;
       return;
     }
 
-    let needsToRefreshTagNode = false;
     if (oldNote.config.tags?.join(".") !== newNote.config.tags?.join(".")) {
       needsToRefreshTagNode = true;
+      needsToRefreshTreeView = true;
     }
 
     oldNote.config = newNote.config;
@@ -122,8 +145,9 @@ export class Crossnote {
           data: notebook.rootTagNode,
         });
       }
+    }
 
-      // Refresh tree view
+    if (needsToRefreshTreeView) {
       this.refreshTreeView();
     }
   }

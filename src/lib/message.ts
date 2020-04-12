@@ -16,6 +16,7 @@ export enum MessageAction {
   UpdateNote = "UpdateNote",
   UpdatedNote = "UpdatedNote",
   SendNotebookTagNode = "SendNotebookTagNode",
+  DeleteNote = "DeleteNote",
 }
 
 export interface SendNotesMessage {
@@ -87,6 +88,11 @@ export interface SendNotebookTagNodeMessage {
   data: TagNode | undefined;
 }
 
+export interface DeleteNoteMessage {
+  action: MessageAction.DeleteNote;
+  data: Note;
+}
+
 export type Message =
   | SendNotesMessage
   | SelectedSectionMessage
@@ -100,4 +106,5 @@ export type Message =
   | SendNoteMessage
   | UpdateNoteMessage
   | UpdatedNoteMessage
-  | SendNotebookTagNodeMessage;
+  | SendNotebookTagNodeMessage
+  | DeleteNoteMessage;

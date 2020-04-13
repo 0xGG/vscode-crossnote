@@ -330,6 +330,11 @@ export function NotesPanel(props: Props) {
           )}
 
           <Box>
+            <IconButton
+              onClick={(event) => setSortMenuAnchorEl(event.currentTarget)}
+            >
+              <SortVariant></SortVariant>
+            </IconButton>
             <Popover
               anchorEl={sortMenuAnchorEl}
               keepMounted

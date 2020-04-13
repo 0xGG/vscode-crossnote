@@ -13,7 +13,7 @@ export function resolveNoteImageSrc(note: Note, imageSrc: string) {
   if (!note) {
     return imageSrc;
   }
-  if (imageSrc.startsWith("https://")) {
+  if (imageSrc.startsWith("https://") || imageSrc.startsWith("data:")) {
     return imageSrc;
   } else if (imageSrc.startsWith("http://")) {
     return "";

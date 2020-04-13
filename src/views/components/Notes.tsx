@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
       overflowY: "auto",
       paddingBottom: theme.spacing(12),
       backgroundColor: theme.palette.background.default,
+      marginTop: "3px",
     },
     updatePanel: {
       padding: theme.spacing(2),

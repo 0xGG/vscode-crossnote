@@ -83,9 +83,7 @@ export default function EditImageDialog(props: Props) {
 
   useEffect(() => {
     if (imageElement && marker && editor) {
-      setImageSrc(
-        imageElement.getAttribute("data-src") || imageElement.src || ""
-      );
+      setImageSrc(imageElement.getAttribute("data-src") || "");
       setImageTitle(imageElement.title || "");
       setImageAlt(imageElement.alt || "");
     }

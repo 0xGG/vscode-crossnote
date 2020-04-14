@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { Note } from "../../lib/note";
 import { vscode } from "../util/util";
 import { MessageAction } from "../../lib/message";
+import slash from "slash";
 
 interface Props {
   open: boolean;
@@ -36,6 +37,7 @@ export default function ChangeFilePathDialog(props: Props) {
         if (!newFilePath.endsWith(".md")) {
           newFilePath = newFilePath + ".md";
         }
+        newFilePath = slash(newFilePath);
         if (note.filePath !== newFilePath) {
           vscode.postMessage({
             action: MessageAction.ChangeNoteFilePath,

@@ -4,6 +4,7 @@ import YAML from "yamljs";
 import { Note, NoteConfig, getHeaderFromMarkdown } from "./note";
 import AES from "crypto-js/aes";
 import mkdirp from "mkdirp";
+import slash from "slash";
 import { SelectedSection, CrossnoteSectionType } from "./section";
 import { randomID } from "../util/util";
 
@@ -138,7 +139,7 @@ ${markdown}`;
       // Create note
       const note: Note = {
         notebookPath: this.dir,
-        filePath: path.relative(this.dir, absFilePath),
+        filePath: slash(path.relative(this.dir, absFilePath)),
         markdown: notFullMarkdown ? markdown.slice(0, 1000) : markdown,
         config: noteConfig,
       };

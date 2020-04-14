@@ -1,6 +1,7 @@
 import { Message } from "../../lib/message";
 import { Note } from "../../lib/note";
 import * as path from "path";
+import slash from "slash";
 
 interface VSCodeWebviewAPI {
   postMessage: (message: Message) => void;
@@ -18,14 +19,12 @@ export function resolveNoteImageSrc(note: Note, imageSrc: string) {
   } else if (imageSrc.startsWith("http://")) {
     return "";
   } else if (imageSrc.startsWith("/")) {
-    return `vscode-resource://file//${path.resolve(
-      note.notebookPath,
-      "." + imageSrc
+    return `vscode-resource://file//${slash(
+      path.resolve(note.notebookPath, "." + imageSrc)
     )}`;
   } else {
-    return `vscode-resource://file//${path.resolve(
-      note.notebookPath,
-      imageSrc
+    return `vscode-resource://file//${slash(
+      path.resolve(note.notebookPath, imageSrc)
     )}`;
   }
 }

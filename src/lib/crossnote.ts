@@ -211,6 +211,7 @@ export class Crossnote {
     }
     let needsToRefreshTagNode = false;
     let needsToRefreshTreeView = false;
+    let needsToRefreshNotesPanelImmediately = false;
     let oldNote = notebook.notes.find((n) => n.filePath === newNote.filePath);
     if (!oldNote) {
       notebook.notes = [newNote, ...notebook.notes];
@@ -223,6 +224,15 @@ export class Crossnote {
     if (oldNote.config.tags?.join(".") !== newNote.config.tags?.join(".")) {
       needsToRefreshTagNode = true;
       needsToRefreshTreeView = true;
+    }
+
+    const oldNoteHasEncription = !!oldNote.config.encryption;
+    const newNoteHasEncryption = !!newNote.config.encryption;
+    if (
+      oldNote.config.pinned !== newNote.config.pinned ||
+      oldNoteHasEncription !== newNoteHasEncryption
+    ) {
+      needsToRefreshNotesPanelImmediately = true;
     }
 
     oldNote.config = newNote.config;
@@ -241,6 +251,10 @@ export class Crossnote {
 
     if (needsToRefreshTreeView) {
       this.refreshTreeView();
+    }
+
+    if (needsToRefreshNotesPanelImmediately) {
+      this.sendNotesToNotesPanelWebview();
     }
   }
 

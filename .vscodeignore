@@ -12,6 +12,7 @@ webpack.config.js
 **/*.ts
 **/*.tsx
 *.vsix
+*.zip
 
 # Manually include the node modules that we used
 node_modules
@@ -20,3 +21,4 @@ node_modules
 !node_modules/crypto-js
 !node_modules/crypto-random-string
 !node_modules/mkdirp
+!node_modules/slash

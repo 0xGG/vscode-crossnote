@@ -33,7 +33,7 @@ export class CrossnoteTreeViewProvider
           this.crossnote.refreshNotesPanelWebview();
           const treeItems: CrossnoteTreeItem[] = [
             new CrossnoteTreeItem(
-              "🗓 " + "Today",
+              "📅 " + "Today",
               vscode.TreeItemCollapsibleState.None,
               notebook,
               CrossnoteSectionType.Today,

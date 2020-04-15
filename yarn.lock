@@ -6820,6 +6820,11 @@ simple-get@^3.0.2:
     once "^1.3.1"
     simple-concat "^1.0.0"
 
+slash@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/slash/download/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
+  integrity sha1-ZTm+hwwWWtvVJAIg2+Nh8bxNRjQ=
+
 slugify@^1.3.1:
   version "1.4.0"
   resolved "https://registry.npm.taobao.org/slugify/download/slugify-1.4.0.tgz#c9557c653c54b0c7f7a8e786ef3431add676d2cb"
@@ -8108,10 +8113,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vickymd@^0.1.15:
-  version "0.1.15"
-  resolved "https://registry.npm.taobao.org/vickymd/download/vickymd-0.1.15.tgz#09bde76fc414e72be3b096cfbb8fc419c5776cbf"
-  integrity sha1-Cb3nb8QU5yvjsJbPu4/EGcV3bL8=
+vickymd@^0.1.16:
+  version "0.1.16"
+  resolved "https://registry.npm.taobao.org/vickymd/download/vickymd-0.1.16.tgz#6116b9523a893949a9afd3bf07c505de269add8d"
+  integrity sha1-YRa5UjqJOUmpr9O/B8UF3iaa3Y0=
   optionalDependencies:
     echarts "^4.7.0"
     emojione "^4.5.0"

@@ -121,6 +121,7 @@
     "react-dom": "^16.13.1",
     "react-i18next": "^11.3.4",
     "react-lazyload": "^2.6.7",
+    "slash": "^3.0.0",
     "styled-components": "^5.1.0",
     "subscriptions-transport-ws": "^0.9.16",
     "super-react-gist": "^1.0.4",
@@ -130,7 +131,7 @@
     "typeface-roboto": "^0.0.75",
     "typescript": "^3.8.3",
     "unstated-next": "^1.1.0",
-    "vickymd": "^0.1.15",
+    "vickymd": "^0.1.16",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

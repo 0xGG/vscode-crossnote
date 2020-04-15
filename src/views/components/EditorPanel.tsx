@@ -620,19 +620,19 @@ export default function EditorPanel(props: Props) {
     };
     editor.on("imageClicked", imageClickedHandler);
 
-    const imageRendered = (args: any) => {
+    const loadImage = (args: any) => {
       const element = args.element;
       const imageSrc = element.getAttribute("data-src");
       element.setAttribute("src", resolveNoteImageSrc(note, imageSrc));
     };
-    editor.on("imageRendered", imageRendered);
+    editor.on("imageReadyToLoad", loadImage);
 
     return () => {
       editor.off("changes", changesHandler);
       editor.off("keyup", keyupHandler);
       editor.off("linkIconClicked", linkIconClickedHandler);
       editor.off("imageClicked", imageClickedHandler);
-      editor.off("imageRendered", imageRendered);
+      editor.off("imageReadyToLoad", loadImage);
     };
   }, [editor, note, decryptionPassword, isDecrypted, openURL]);
 

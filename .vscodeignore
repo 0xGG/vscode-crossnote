@@ -12,7 +12,6 @@ webpack.config.js
 **/*.ts
 **/*.tsx
 *.vsix
-*.zip
 
 # Manually include the node modules that we used
 node_modules

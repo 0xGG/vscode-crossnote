@@ -29,7 +29,7 @@ import { useTranslation } from "react-i18next";
 import Board from "@lourenci/react-kanban";
 import { Editor as CodeMirrorEditor } from "codemirror";
 import { renderPreview } from "vickymd/preview";
-const VickyMD = require("vickymd");
+const VickyMD = require("vickymd/core");
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,7 +72,7 @@ interface KanbanCard {
   description: string;
 }
 
-interface kanbanColumn {
+interface KanbanColumn {
   id: number;
   title: string;
   wip: boolean;
@@ -80,11 +80,11 @@ interface kanbanColumn {
 }
 
 interface KanbanBoard {
-  columns: kanbanColumn[];
+  columns: KanbanColumn[];
 }
 
 interface KanbanColumnHeaderProps {
-  column: kanbanColumn;
+  column: KanbanColumn;
   board: KanbanBoard;
   refreshBoard: (board: Board) => void;
   isPreview: boolean;
@@ -327,7 +327,7 @@ function KanbanWidget(props: WidgetArgs) {
   return (
     <div>
       <Board
-        renderColumnHeader={(column: kanbanColumn) => (
+        renderColumnHeader={(column: KanbanColumn) => (
           <KanbanColumnHeaderDisplay
             column={column}
             board={board}

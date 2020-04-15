@@ -17,7 +17,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  CircularProgress,
 } from "@material-ui/core";
 import {
   Editor as CodeMirrorEditor,
@@ -57,7 +56,17 @@ import { DeleteDialog } from "./DeleteDialog";
 import ChangeFilePathDialog from "./ChangeFilePathDialog";
 import EditImageDialog from "./EditImageDialog";
 
-const VickyMD = require("vickymd");
+const VickyMD = require("vickymd/core");
+
+const HMDFold = {
+  image: true,
+  link: true,
+  math: true,
+  html: true, // maybe dangerous
+  emoji: true,
+  widget: true,
+  code: true,
+};
 
 const previewZIndex = 99;
 const useStyles = makeStyles((theme: Theme) =>
@@ -517,6 +526,7 @@ export default function EditorPanel(props: Props) {
           hashtag: true,
         },
         inputStyle: "textarea",
+        hmdFold: HMDFold,
       });
       editor.setOption("lineNumbers", false);
       editor.setOption("foldGutter", false);
@@ -642,6 +652,8 @@ export default function EditorPanel(props: Props) {
     }
     if (editorMode === EditorMode.VickyMD) {
       VickyMD.switchToHyperMD(editor);
+      // @ts-ignore
+      editor.setOption("hmdFold", HMDFold);
       editor.getWrapperElement().style.display = "block";
       editor.refresh();
     } else if (editorMode === EditorMode.SourceCode) {

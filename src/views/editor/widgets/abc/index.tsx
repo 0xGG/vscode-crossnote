@@ -105,7 +105,7 @@ K: Emin
         });
 
         // Test synth
-      }, 2000);
+      }, 1000);
     }
   }, [editorElement, warningsElement, canvasElement, audioControlElement]);
 

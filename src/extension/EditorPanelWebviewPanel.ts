@@ -60,7 +60,7 @@ export function createEditorPanelWebviewPanel(
     ),
   ].map((filePath) => panel.webview.asWebviewUri(vscode.Uri.file(filePath)));
 
-  panel.webview.html = getWebviewContent(context, panel.webview, jsArr, cssArr);
+  panel.webview.html = getWebviewContent(context, panel, jsArr, cssArr);
   panel.iconPath = vscode.Uri.file(
     path.join(context.extensionPath, "media", "editNote.svg")
   );
@@ -71,7 +71,7 @@ export function createEditorPanelWebviewPanel(
 
 function getWebviewContent(
   context: vscode.ExtensionContext,
-  webview: vscode.Webview,
+  panel: vscode.WebviewPanel,
   jsArr: vscode.Uri[],
   cssArr: vscode.Uri[]
 ) {
@@ -84,7 +84,7 @@ function getWebviewContent(
         name="description"
         content="Crossnote - A markdown note pwa that supports offline editing as well as git repository push&pull "
       />
-      ${getWebviewCSP(webview)}
+      ${getWebviewCSP(panel.webview)}
       ${cssArr
         .map((css) => `<link rel="stylesheet" href="${css}"></link>`)
         .join("\n")}
@@ -94,7 +94,11 @@ function getWebviewContent(
       <div id="root"></div>
     </body>
     <script>
-      window.extensionPath = ${JSON.stringify(context.extensionPath)}
+      window.extensionPath = ${JSON.stringify(
+        panel.webview
+          .asWebviewUri(vscode.Uri.file(context.extensionPath))
+          .toString(true)
+      )}
       window.crossnoteSettings = ${JSON.stringify(
         VSCodeCrossnoteSettings.getCurrentSettings()
       )}

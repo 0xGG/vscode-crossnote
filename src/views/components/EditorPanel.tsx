@@ -57,7 +57,6 @@ import ChangeFilePathDialog from "./ChangeFilePathDialog";
 import EditImageDialog from "./EditImageDialog";
 import { setTheme } from "vickymd/theme";
 import { selectedTheme } from "../themes/manager";
-import slash from "slash";
 
 const VickyMD = require("vickymd/core");
 
@@ -565,10 +564,10 @@ export default function EditorPanel(props: Props) {
       setTheme({
         editor,
         themeName: selectedTheme.name,
-        baseUri: `vscode-resource://file///${slash(extensionPath).replace(
-          /\/+$/,
-          ""
-        )}/node_modules/vickymd/theme/`,
+        baseUri:
+          extensionPath +
+          (extensionPath.endsWith("/") ? "" : "/") +
+          "node_modules/vickymd/theme/",
       });
     }
   }, [editor]);

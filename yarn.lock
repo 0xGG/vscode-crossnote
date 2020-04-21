@@ -2167,10 +2167,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.npm.taobao.org/code-point-at/download/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codemirror@^5.52.2:
-  version "5.53.0"
-  resolved "https://registry.npm.taobao.org/codemirror/download/codemirror-5.53.0.tgz#7d5c373388e26bb902082da749a0e8cedbfe2b95"
-  integrity sha1-fVw3M4jia7kCCC2nSaDoztv+K5U=
+codemirror@5.52.2:
+  version "5.52.2"
+  resolved "https://registry.npm.taobao.org/codemirror/download/codemirror-5.52.2.tgz#c29e1f7179f85eb0dd17c0586fa810e4838ff584"
+  integrity sha1-wp4fcXn4XrDdF8BYb6gQ5IOP9YQ=
 
 collection-visit@^1.0.0:
   version "1.0.0"

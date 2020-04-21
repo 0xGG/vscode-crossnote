@@ -1166,10 +1166,10 @@
   dependencies:
     source-map "^0.6.1"
 
-"@types/vscode@1.44.0":
-  version "1.44.0"
-  resolved "https://registry.npm.taobao.org/@types/vscode/download/@types/vscode-1.44.0.tgz#62ecfe3d0e38942fce556574da54ee1013c775b7"
-  integrity sha1-Yuz+PQ44lC/OVWV02lTuEBPHdbc=
+"@types/vscode@1.43.0":
+  version "1.43.0"
+  resolved "https://registry.npm.taobao.org/@types/vscode/download/@types/vscode-1.43.0.tgz#22276e60034c693b33117f1068ffaac0e89522db"
+  integrity sha1-IiduYANMaTszEX8QaP+qwOiVIts=
 
 "@types/webpack-sources@*":
   version "0.1.7"

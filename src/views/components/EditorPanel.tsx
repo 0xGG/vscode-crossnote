@@ -565,7 +565,7 @@ export default function EditorPanel(props: Props) {
       setTheme({
         editor,
         themeName: selectedTheme.name,
-        baseUri: `vscode-resource://${slash(extensionPath).replace(
+        baseUri: `vscode-resource://file///${slash(extensionPath).replace(
           /\/+$/,
           ""
         )}/node_modules/vickymd/theme/`,

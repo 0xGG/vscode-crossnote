@@ -15,12 +15,9 @@ export function createNotesPanelWebviewPanel(
       enableScripts: true,
     }
   );
-  const cssArr = [
-    path.join(
-      context.extensionPath,
-      "./public/styles/preview_themes/github-light.css"
-    ),
-  ].map((filePath) => panel.webview.asWebviewUri(vscode.Uri.file(filePath)));
+  const cssArr = [].map((filePath) =>
+    panel.webview.asWebviewUri(vscode.Uri.file(filePath))
+  );
 
   const jsArr = [
     path.join(context.extensionPath, "./out/views/NotesPanelWebview.bundle.js"),

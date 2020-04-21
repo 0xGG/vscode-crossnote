@@ -16,18 +16,9 @@ export function createEditorPanelWebviewPanel(
     }
   );
 
-  const cssArr = [
-    // preview theme
-    path.join(
-      context.extensionPath,
-      "./public/styles/preview_themes/github-light.css"
-    ),
-    // prism
-    path.join(
-      context.extensionPath,
-      "./public/deps/mume/styles/prism_theme/github.css"
-    ),
-  ].map((filePath) => panel.webview.asWebviewUri(vscode.Uri.file(filePath)));
+  const cssArr = [].map((filePath) =>
+    panel.webview.asWebviewUri(vscode.Uri.file(filePath))
+  );
 
   const jsArr = [
     // mermaid

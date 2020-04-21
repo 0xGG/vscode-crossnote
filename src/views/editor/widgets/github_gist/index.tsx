@@ -8,12 +8,18 @@ import {
   Box,
   TextField,
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import clsx from "clsx";
 // @ts-ignore
 import Gist from "super-react-gist"; // <-- import the library
 import { TrashCanOutline } from "mdi-material-ui";
 import { useTranslation } from "react-i18next";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -94,6 +100,11 @@ function GitHubGistWidget(props: WidgetArgs) {
 
 export const GitHubGistWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<GitHubGistWidget {...args}></GitHubGistWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <GitHubGistWidget {...args}></GitHubGistWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

@@ -568,7 +568,7 @@ export default function EditorPanel(props: Props) {
         baseUri: `vscode-resource://${slash(extensionPath).replace(
           /\/+$/,
           ""
-        )}/public/styles/`,
+        )}/node_modules/vickymd/theme/`,
       });
     }
   }, [editor]);

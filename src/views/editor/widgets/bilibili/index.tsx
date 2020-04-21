@@ -9,10 +9,16 @@ import {
   Input,
   Tooltip,
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import clsx from "clsx";
 import { TrashCan } from "mdi-material-ui";
 import { useTranslation } from "react-i18next";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -156,6 +162,11 @@ function BilibiliWidget(props: WidgetArgs) {
 
 export const BilibiliWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<BilibiliWidget {...args}></BilibiliWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <BilibiliWidget {...args}></BilibiliWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

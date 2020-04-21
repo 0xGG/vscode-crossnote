@@ -9,12 +9,18 @@ import {
   Input,
   Tooltip,
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import clsx from "clsx";
 import { TrashCan } from "mdi-material-ui";
 import { useTranslation } from "react-i18next";
 import { smmsUploadImages } from "../../../../util/image_uploader";
 import Noty from "noty";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -167,6 +173,11 @@ function ImageWidget(props: WidgetArgs) {
 
 export const ImageWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<ImageWidget {...args}></ImageWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <ImageWidget {...args}></ImageWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

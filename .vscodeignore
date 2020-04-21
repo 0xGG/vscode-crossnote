@@ -24,3 +24,4 @@ node_modules
 !node_modules/crypto-random-string
 !node_modules/mkdirp
 !node_modules/slash
+!node_modules/vickymd/theme

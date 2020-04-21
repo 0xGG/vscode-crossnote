@@ -4,8 +4,12 @@ import { DarkTheme } from "./dark";
 import { crossnoteSettings } from "../util/util";
 
 export class ThemeManager {
-  public themes: CrossnoteTheme[] = [];
-  public selectedTheme: CrossnoteTheme = null;
+  public themes: CrossnoteTheme[];
+  public selectedTheme: CrossnoteTheme;
+  constructor() {
+    this.themes = [];
+    this.selectedTheme = null;
+  }
   public addTheme(theme: CrossnoteTheme) {
     this.themes.push(theme);
     if (!this.selectedTheme) {

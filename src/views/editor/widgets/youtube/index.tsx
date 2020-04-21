@@ -9,10 +9,16 @@ import {
   Input,
   Tooltip,
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import clsx from "clsx";
 import { TrashCan } from "mdi-material-ui";
 import { useTranslation } from "react-i18next";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -161,6 +167,11 @@ function YoutubeWidget(props: WidgetArgs) {
 
 export const YoutubeWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<YoutubeWidget {...args}></YoutubeWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <YoutubeWidget {...args}></YoutubeWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

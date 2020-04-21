@@ -11,10 +11,16 @@ import {
   Switch,
   FormControlLabel,
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import clsx from "clsx";
 import { TrashCan } from "mdi-material-ui";
 import { useTranslation } from "react-i18next";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -172,6 +178,11 @@ function AudioWidget(props: WidgetArgs) {
 
 export const AudioWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<AudioWidget {...args}></AudioWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <AudioWidget {...args}></AudioWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

@@ -2,7 +2,12 @@ import { WidgetCreator, WidgetArgs } from "vickymd/widget";
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import clsx from "clsx";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import { Box, IconButton, Card } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { generateUUID } from "../../../../util/util";
@@ -11,6 +16,7 @@ import { generateUUID } from "../../../../util/util";
 import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
 import { ContentSave } from "mdi-material-ui";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -156,6 +162,11 @@ K: Emin
 
 export const ABCWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<ABCWidget {...args}></ABCWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <ABCWidget {...args}></ABCWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

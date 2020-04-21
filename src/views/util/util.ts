@@ -33,3 +33,5 @@ export function resolveNoteImageSrc(note: Note, imageSrc: string) {
 export const crossnoteSettings: CrossnoteSettings = window[
   "crossnoteSettings"
 ] as CrossnoteSettings;
+
+export const extensionPath: string = window["extensionPath"] as string;

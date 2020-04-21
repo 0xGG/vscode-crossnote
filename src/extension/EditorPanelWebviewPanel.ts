@@ -69,7 +69,7 @@ export function createEditorPanelWebviewPanel(
     ),
   ].map((filePath) => panel.webview.asWebviewUri(vscode.Uri.file(filePath)));
 
-  panel.webview.html = getWebviewContent(panel.webview, jsArr, cssArr);
+  panel.webview.html = getWebviewContent(context, panel.webview, jsArr, cssArr);
   panel.iconPath = vscode.Uri.file(
     path.join(context.extensionPath, "media", "editNote.svg")
   );
@@ -79,6 +79,7 @@ export function createEditorPanelWebviewPanel(
 }
 
 function getWebviewContent(
+  context: vscode.ExtensionContext,
   webview: vscode.Webview,
   jsArr: vscode.Uri[],
   cssArr: vscode.Uri[]
@@ -102,6 +103,7 @@ function getWebviewContent(
       <div id="root"></div>
     </body>
     <script>
+      window.extensionPath = ${JSON.stringify(context.extensionPath)}
       window.crossnoteSettings = ${JSON.stringify(
         VSCodeCrossnoteSettings.getCurrentSettings()
       )}

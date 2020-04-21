@@ -24,6 +24,7 @@ import {
   makeStyles,
   Theme,
   ThemeProvider,
+  darken,
 } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { TrashCan } from "mdi-material-ui";
@@ -49,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: "center",
       padding: "24px",
       border: "4px dotted #c7c7c7",
-      backgroundColor: "#f1f1f1",
+      backgroundColor: darken(theme.palette.background.paper, 0.01),
       cursor: "pointer",
       "&:hover": {
         backgroundColor: "#eee",
@@ -65,6 +66,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     disabled: {
       cursor: "not-allowed",
+    },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
     },
   })
 );
@@ -101,9 +105,7 @@ function OCRWidget(props: WidgetArgs) {
   const [selectedLanguages, setSelectedLanguages] = useState<string[]>(
     getInitialLanguages()
   );
-  const [grayscaleChecked, setGrayscaleChecked] = useState<boolean>(
-    !!localStorage.getItem("widget/crossnote.ocr/grayscale") || true
-  );
+  const [grayscaleChecked, setGrayscaleChecked] = useState<boolean>(true);
 
   useEffect(() => {
     if (canvas && imageDataURL) {
@@ -203,10 +205,6 @@ function OCRWidget(props: WidgetArgs) {
       } else {
         selectedLanguages = [...selectedLanguages, lang];
       }
-      localStorage.setItem(
-        "widget/crossnote.ocr/languages",
-        JSON.stringify(selectedLanguages)
-      );
       return selectedLanguages;
     });
   }
@@ -299,14 +297,6 @@ function OCRWidget(props: WidgetArgs) {
               <Switch
                 checked={grayscaleChecked}
                 onChange={() => {
-                  if (grayscaleChecked) {
-                    localStorage.removeItem("widget/crossnote.ocr/grayscale");
-                  } else {
-                    localStorage.setItem(
-                      "widget/crossnote.ocr/grayscale",
-                      "true"
-                    );
-                  }
                   setGrayscaleChecked(!grayscaleChecked);
                 }}
                 color={"primary"}
@@ -348,7 +338,7 @@ function OCRWidget(props: WidgetArgs) {
       <Box className={clsx(classes.actionButtons)}>
         <Tooltip title={t("general/Delete")}>
           <IconButton onClick={() => props.removeSelf()}>
-            <TrashCan></TrashCan>
+            <TrashCan className={clsx(classes.iconBtnSVG)}></TrashCan>
           </IconButton>
         </Tooltip>
       </Box>

@@ -54,6 +54,9 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#f44336",
       marginTop: theme.spacing(2),
     },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
+    },
   })
 );
 
@@ -109,7 +112,7 @@ function BilibiliWidget(props: WidgetArgs) {
       <Box className={clsx(classes.actionButtons)}>
         <Tooltip title={t("general/Delete")}>
           <IconButton onClick={() => props.removeSelf()}>
-            <TrashCan></TrashCan>
+            <TrashCan className={clsx(classes.iconBtnSVG)}></TrashCan>
           </IconButton>
         </Tooltip>
       </Box>

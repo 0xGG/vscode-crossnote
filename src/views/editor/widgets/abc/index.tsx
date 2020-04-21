@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: "128px",
       resize: "none",
       border: "none",
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.text.primary,
     },
     canvas: {
       overflow: "auto !important",
@@ -42,6 +44,9 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "absolute",
       top: "0",
       right: "0",
+    },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
     },
   })
 );
@@ -100,7 +105,7 @@ K: Emin
         });
 
         // Test synth
-      }, 1000);
+      }, 2000);
     }
   }, [editorElement, warningsElement, canvasElement, audioControlElement]);
 
@@ -128,7 +133,7 @@ K: Emin
         ></textarea>
         {!props.isPreview && attributes["abc"] !== abc && (
           <IconButton
-            className={clsx(classes.saveBtn)}
+            className={clsx(classes.saveBtn, classes.iconBtnSVG)}
             onClick={() => {
               props.setAttributes(Object.assign(props.attributes, { abc }));
             }}

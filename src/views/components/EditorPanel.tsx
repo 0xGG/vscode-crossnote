@@ -873,8 +873,8 @@ export default function EditorPanel(props: Props) {
                 },
                 {
                   text: `|   |   |
-  |---|---|
-  |   |   |
+|---|---|
+|   |   |
   `,
                   displayText: `/table - ${t("editor/toolbar/insert-table")}`,
                 },
@@ -936,12 +936,12 @@ export default function EditorPanel(props: Props) {
                     "editor/toolbar/insert-github-gist"
                   )}`,
                 },
-                {
+                /*{
                   text: "<!-- @crossnote.comment -->  \n",
                   displayText: `/crossnote.comment - ${t(
                     "editor/toolbar/insert-comment"
                   )}`,
-                },
+                },*/
               ];
               const filtered = commands.filter(
                 (item) =>

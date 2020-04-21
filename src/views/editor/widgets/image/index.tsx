@@ -14,6 +14,8 @@ import {
   makeStyles,
   Theme,
   ThemeProvider,
+  lighten,
+  darken,
 } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { TrashCan } from "mdi-material-ui";
@@ -40,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: "center",
       padding: "24px",
       border: "4px dotted #c7c7c7",
-      backgroundColor: "#f1f1f1",
+      backgroundColor: darken(theme.palette.background.paper, 0.01),
       cursor: "pointer",
       "&:hover": {
         backgroundColor: "#eee",
@@ -48,6 +50,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     disabled: {
       cursor: "not-allowed",
+    },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
     },
   })
 );
@@ -111,7 +116,7 @@ function ImageWidget(props: WidgetArgs) {
       <Box className={clsx(classes.actionButtons)}>
         <Tooltip title={t("general/Delete")}>
           <IconButton onClick={() => props.removeSelf()}>
-            <TrashCan></TrashCan>
+            <TrashCan className={clsx(classes.iconBtnSVG)}></TrashCan>
           </IconButton>
         </Tooltip>
       </Box>

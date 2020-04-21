@@ -49,6 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
     disabled: {
       cursor: "not-allowed",
     },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
+    },
   })
 );
 
@@ -94,7 +97,7 @@ function AudioWidget(props: WidgetArgs) {
       <Box className={clsx(classes.actionButtons)}>
         <Tooltip title={t("general/Delete")}>
           <IconButton onClick={() => props.removeSelf()}>
-            <TrashCan></TrashCan>
+            <TrashCan className={clsx(classes.iconBtnSVG)}></TrashCan>
           </IconButton>
         </Tooltip>
       </Box>

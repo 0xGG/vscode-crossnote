@@ -11,6 +11,8 @@ styles/src/**
 webpack.config.js
 **/*.ts
 **/*.tsx
+**/*.scss
+**/*.less
 *.vsix
 *.zip
 

@@ -25,9 +25,11 @@
     "compile": "npm-run-all compile:*",
     "compile:extension": "tsc -p ./",
     "compile:views": "webpack --mode production",
+    "compile:copy-css-files": "gulp copy-css-files",
     "watch": "npm-run-all -p watch:*",
     "watch:extension": "tsc -watch -p ./",
     "watch:views": "webpack --watch --mode development",
+    "watch:copy-css-files": "gulp copy-css-files",
     "lint": "tslint -p ./",
     "package": "vsce package --yarn"
   },
@@ -94,6 +96,20 @@
           "group": "navigation"
         }
       ]
+    },
+    "configuration": {
+      "title": "Crossnote",
+      "properties": {
+        "crossnote.theme": {
+          "description": "Crossnote theme (Please reload window after make changes)",
+          "default": "dark",
+          "type": "string",
+          "enum": [
+            "light",
+            "dark"
+          ]
+        }
+      }
     }
   },
   "dependencies": {

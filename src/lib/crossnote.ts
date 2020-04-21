@@ -8,6 +8,7 @@ import { Notebook } from "./notebook";
 import { CrossnoteSectionType, SelectedSection } from "./section";
 import { createEditorPanelWebviewPanel } from "../extension/EditorPanelWebviewPanel";
 import { Note } from "./note";
+import { VSCodeCrossnoteSettings } from "../extension/settings";
 
 /**
  * open html file in browser or open pdf file in reader ... etc
@@ -44,6 +45,8 @@ export class Crossnote {
   private selectedNote: Note | undefined;
 
   private refreshTreeView: () => void = () => {};
+
+  private config = VSCodeCrossnoteSettings.getCurrentSettings();
 
   constructor(private context: vscode.ExtensionContext) {
     this.startNotesPanelRefreshTimer();
@@ -479,5 +482,17 @@ export class Crossnote {
       };
       this.notesPanelWebviewPanel.webview.postMessage(message);
     }
+  }
+
+  public updateConfiguration() {
+    const newConfig = VSCodeCrossnoteSettings.getCurrentSettings();
+    if (!this.config.isEqualTo(newConfig)) {
+      this.config = newConfig;
+      this.sendConfigurationsToWebviews();
+    }
+  }
+
+  private sendConfigurationsToWebviews() {
+    // TODO: Implement this function
   }
 }

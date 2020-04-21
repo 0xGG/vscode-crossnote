@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { getWebviewCSP } from "./WebviewConfig";
+import { VSCodeCrossnoteSettings } from "./settings";
 
 export function createNotesPanelWebviewPanel(
   context: vscode.ExtensionContext,
@@ -57,6 +58,11 @@ function getWebviewContent(
       <noscript>You need to enable JavaScript to run this app.</noscript>
       <div id="root"></div>
     </body>
+    <script>
+      window.crossnoteSettings = ${JSON.stringify(
+        VSCodeCrossnoteSettings.getCurrentSettings()
+      )}
+    </script>
     ${jsArr.map((js) => `<script src=${js}></script>`).join("\n")}
   </html>
   `;

@@ -1,5 +1,6 @@
 import { Message } from "../../lib/message";
 import { Note } from "../../lib/note";
+import { CrossnoteSettings } from "../../lib/settings";
 import * as path from "path";
 import slash from "slash";
 
@@ -28,3 +29,9 @@ export function resolveNoteImageSrc(note: Note, imageSrc: string) {
     )}`;
   }
 }
+
+export const crossnoteSettings: CrossnoteSettings = window[
+  "crossnoteSettings"
+] as CrossnoteSettings;
+
+export const extensionPath: string = window["extensionPath"] as string;

@@ -11,6 +11,8 @@ styles/src/**
 webpack.config.js
 **/*.ts
 **/*.tsx
+**/*.scss
+**/*.less
 *.vsix
 *.zip
 
@@ -22,3 +24,4 @@ node_modules
 !node_modules/crypto-random-string
 !node_modules/mkdirp
 !node_modules/slash
+!node_modules/vickymd/theme

@@ -2,7 +2,12 @@ import { WidgetCreator, WidgetArgs } from "vickymd/widget";
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import clsx from "clsx";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import { Box, IconButton, Card } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 import { generateUUID } from "../../../../util/util";
@@ -11,6 +16,7 @@ import { generateUUID } from "../../../../util/util";
 import abcjs from "abcjs";
 import "abcjs/abcjs-audio.css";
 import { ContentSave } from "mdi-material-ui";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -27,6 +33,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: "128px",
       resize: "none",
       border: "none",
+      backgroundColor: theme.palette.background.paper,
+      color: theme.palette.text.primary,
     },
     canvas: {
       overflow: "auto !important",
@@ -36,6 +44,9 @@ const useStyles = makeStyles((theme: Theme) =>
       position: "absolute",
       top: "0",
       right: "0",
+    },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
     },
   })
 );
@@ -74,6 +85,9 @@ K: Emin
       audioControlElement
     ) {
       setTimeout(() => {
+        if (!document.getElementById(editorElement.id)) {
+          return;
+        }
         const editor = new abcjs.Editor(editorElement.id, {
           canvas_id: canvasElement.id,
           warnings_id: warningsElement.id,
@@ -122,7 +136,7 @@ K: Emin
         ></textarea>
         {!props.isPreview && attributes["abc"] !== abc && (
           <IconButton
-            className={clsx(classes.saveBtn)}
+            className={clsx(classes.saveBtn, classes.iconBtnSVG)}
             onClick={() => {
               props.setAttributes(Object.assign(props.attributes, { abc }));
             }}
@@ -156,6 +170,11 @@ K: Emin
 
 export const ABCWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<ABCWidget {...args}></ABCWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <ABCWidget {...args}></ABCWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

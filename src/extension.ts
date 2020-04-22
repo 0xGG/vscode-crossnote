@@ -74,6 +74,15 @@ export function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  /*
+  // TODO: Support update settings in real-time
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(() => {
+      crossnote.updateConfiguration();
+    })
+  );
+  */
 }
 
 // this method is called when your extension is deactivated

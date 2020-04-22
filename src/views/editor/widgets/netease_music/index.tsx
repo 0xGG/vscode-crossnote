@@ -11,10 +11,16 @@ import {
   Switch,
   FormControlLabel,
 } from "@material-ui/core";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import {
+  createStyles,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+} from "@material-ui/core/styles";
 import clsx from "clsx";
 import { TrashCan } from "mdi-material-ui";
 import { useTranslation } from "react-i18next";
+import { selectedTheme } from "../../../themes/manager";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,6 +49,9 @@ const useStyles = makeStyles((theme: Theme) =>
     disabled: {
       cursor: "not-allowed",
     },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
+    },
   })
 );
 
@@ -65,7 +74,7 @@ function NeteaseMusicWidget(props: WidgetArgs) {
           height: "86px",
           border: "none",
         }}
-        src={`https://music.163.com/outchain/player?type=2&id=${
+        src={`https://music.163.com/outchain/player?type=3&id=${
           attributes["id"]
         }&auto=${attributes["autoplay"] ? "1" : "0"}&height=66`}
       ></iframe>
@@ -78,11 +87,13 @@ function NeteaseMusicWidget(props: WidgetArgs) {
 
   return (
     <Card elevation={2} className={clsx(classes.card)}>
-      <Typography variant={"h5"}>{t("general/Audio")}</Typography>
+      <Typography variant={"h5"}>
+        {t("editor/toolbar/netease-music")}
+      </Typography>
       <Box className={clsx(classes.actionButtons)}>
         <Tooltip title={t("general/Delete")}>
           <IconButton onClick={() => props.removeSelf()}>
-            <TrashCan></TrashCan>
+            <TrashCan className={clsx(classes.iconBtnSVG)}></TrashCan>
           </IconButton>
         </Tooltip>
       </Box>
@@ -133,6 +144,11 @@ function NeteaseMusicWidget(props: WidgetArgs) {
 
 export const NeteaseMusicWidgetCreator: WidgetCreator = (args) => {
   const el = document.createElement("span");
-  ReactDOM.render(<NeteaseMusicWidget {...args}></NeteaseMusicWidget>, el);
+  ReactDOM.render(
+    <ThemeProvider theme={selectedTheme.muiTheme}>
+      <NeteaseMusicWidget {...args}></NeteaseMusicWidget>
+    </ThemeProvider>,
+    el
+  );
   return el;
 };

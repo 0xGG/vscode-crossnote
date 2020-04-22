@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { getWebviewCSP } from "./WebviewConfig";
+import { VSCodeCrossnoteSettings } from "./settings";
 
 export function createNotesPanelWebviewPanel(
   context: vscode.ExtensionContext,
@@ -14,18 +15,15 @@ export function createNotesPanelWebviewPanel(
       enableScripts: true,
     }
   );
-  const cssArr = [
-    path.join(
-      context.extensionPath,
-      "./public/styles/preview_themes/github-light.css"
-    ),
-  ].map((filePath) => panel.webview.asWebviewUri(vscode.Uri.file(filePath)));
+  const cssArr = [].map((filePath) =>
+    panel.webview.asWebviewUri(vscode.Uri.file(filePath))
+  );
 
   const jsArr = [
     path.join(context.extensionPath, "./out/views/NotesPanelWebview.bundle.js"),
   ].map((filePath) => panel.webview.asWebviewUri(vscode.Uri.file(filePath)));
 
-  panel.webview.html = getWebviewContent(panel.webview, jsArr, cssArr);
+  panel.webview.html = getWebviewContent(context, panel, jsArr, cssArr);
   panel.iconPath = vscode.Uri.file(
     path.join(context.extensionPath, "media", "notes.svg")
   );
@@ -35,7 +33,8 @@ export function createNotesPanelWebviewPanel(
 }
 
 function getWebviewContent(
-  webview: vscode.Webview,
+  context: vscode.ExtensionContext,
+  panel: vscode.WebviewPanel,
   jsArr: vscode.Uri[],
   cssArr: vscode.Uri[]
 ) {
@@ -48,7 +47,7 @@ function getWebviewContent(
         name="description"
         content="Crossnote - A markdown note pwa that supports offline editing as well as git repository push&pull "
       />
-      ${getWebviewCSP(webview)}
+      ${getWebviewCSP(panel.webview)}
       ${cssArr
         .map((css) => `<link rel="stylesheet" href="${css}"></link>`)
         .join("\n")}
@@ -57,6 +56,16 @@ function getWebviewContent(
       <noscript>You need to enable JavaScript to run this app.</noscript>
       <div id="root"></div>
     </body>
+    <script>
+      window.extensionPath = ${JSON.stringify(
+        panel.webview
+          .asWebviewUri(vscode.Uri.file(context.extensionPath))
+          .toString(true)
+      )}
+      window.crossnoteSettings = ${JSON.stringify(
+        VSCodeCrossnoteSettings.getCurrentSettings()
+      )}
+    </script>
     ${jsArr.map((js) => `<script src=${js}></script>`).join("\n")}
   </html>
   `;

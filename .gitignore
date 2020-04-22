@@ -108,3 +108,4 @@ dist
 out
 *.vsix
 *.zip
+public/styles

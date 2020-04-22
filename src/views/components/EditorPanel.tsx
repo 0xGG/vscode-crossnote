@@ -44,7 +44,7 @@ import Noty from "noty";
 import * as CryptoJS from "crypto-js";
 import { Message, MessageAction } from "../../lib/message";
 import { TagNode } from "../../lib/notebook";
-import { vscode, resolveNoteImageSrc } from "../util/util";
+import { vscode, resolveNoteImageSrc, extensionPath } from "../util/util";
 import { Note, getHeaderFromMarkdown } from "../../lib/note";
 import { TagStopRegExp } from "../util/markdown";
 import { initMathPreview } from "../editor/views/math-preview";
@@ -55,6 +55,8 @@ import { formatDistance } from "date-fns";
 import { DeleteDialog } from "./DeleteDialog";
 import ChangeFilePathDialog from "./ChangeFilePathDialog";
 import EditImageDialog from "./EditImageDialog";
+import { setTheme } from "vickymd/theme";
+import { selectedTheme } from "../themes/manager";
 
 const VickyMD = require("vickymd/core");
 
@@ -88,8 +90,9 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      borderBottom: "1px solid #eee",
+      // borderBottom: "1px solid #eee",
       overflow: "auto",
+      backgroundColor: theme.palette.background.paper,
     },
     bottomPanel: {
       position: "relative",
@@ -97,7 +100,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      borderTop: "1px solid #eee",
+      backgroundColor: theme.palette.background.paper,
       // color: theme.palette.primary.contrastText,
       // backgroundColor: theme.palette.primary.main
     },
@@ -123,6 +126,7 @@ const useStyles = makeStyles((theme: Theme) =>
       //     display: "contents",
       flex: 1,
       overflow: "auto",
+      backgroundColor: theme.palette.background.paper,
       "& .CodeMirror-gutters": {
         display: "none",
       },
@@ -133,19 +137,26 @@ const useStyles = makeStyles((theme: Theme) =>
         height: "100%",
         padding: theme.spacing(0, 2),
         [theme.breakpoints.down("sm")]: {
-          padding: theme.spacing(0),
+          padding: theme.spacing(1),
         },
       },
       "& .CodeMirror-vscrollbar": {
         // display: "none !important",
       },
+      "& .CodeMirror-placeholder": {
+        color: `${theme.palette.action.disabled} !important`,
+      },
+      /*
       [theme.breakpoints.down("sm")]: {
         padding: theme.spacing(1),
       },
+      */
     },
     editor: {
       width: "100%",
       height: "100%",
+      backgroundColor: theme.palette.background.default,
+      border: "none",
     },
     menuItemOverride: {
       cursor: "default",
@@ -204,6 +215,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     floatWinClose: {
       color: "#eee",
+    },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
     },
   })
 );
@@ -545,6 +559,35 @@ export default function EditorPanel(props: Props) {
     }
   }, [textAreaElement, editor]);
 
+  useEffect(() => {
+    if (editor) {
+      setTheme({
+        editor,
+        themeName: selectedTheme.name,
+        baseUri:
+          extensionPath +
+          (extensionPath.endsWith("/") ? "" : "/") +
+          "node_modules/vickymd/theme/",
+      });
+    }
+  }, [editor]);
+
+  // Initialize cursor color
+  useEffect(() => {
+    const styleID = "codemirror-cursor-style";
+    let style = document.getElementById(styleID);
+    if (!style) {
+      style = document.createElement("style");
+      style.id = styleID;
+      document.body.appendChild(style);
+    }
+    style.innerText = `
+    .CodeMirror-cursor.CodeMirror-cursor {
+      border-left: 2px solid rgba(74, 144, 226, 1);
+    }    
+    `;
+  }, []);
+
   /*
   useEffect(() => {
     if (note && editor) {
@@ -829,8 +872,8 @@ export default function EditorPanel(props: Props) {
                 },
                 {
                   text: `|   |   |
-  |---|---|
-  |   |   |
+|---|---|
+|   |   |
   `,
                   displayText: `/table - ${t("editor/toolbar/insert-table")}`,
                 },
@@ -892,12 +935,12 @@ export default function EditorPanel(props: Props) {
                     "editor/toolbar/insert-github-gist"
                   )}`,
                 },
-                {
+                /*{
                   text: "<!-- @crossnote.comment -->  \n",
                   displayText: `/crossnote.comment - ${t(
                     "editor/toolbar/insert-comment"
                   )}`,
-                },
+                },*/
               ];
               const filtered = commands.filter(
                 (item) =>
@@ -1295,7 +1338,7 @@ export default function EditorPanel(props: Props) {
                       >
                         <Typography>{tagName}</Typography>
                         <IconButton onClick={() => deleteTag(tagName)}>
-                          <Close></Close>
+                          <Close className={clsx(classes.iconBtnSVG)}></Close>
                         </IconButton>
                       </Box>
                     </ListItem>

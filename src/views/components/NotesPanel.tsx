@@ -35,7 +35,7 @@ import { Message, MessageAction } from "../../lib/message";
 import { Note } from "../../lib/note";
 import { CrossnoteSectionType, SelectedSection } from "../../lib/section";
 import Notes, { OrderDirection, OrderBy } from "./Notes";
-import { vscode } from "../util/util";
+import { vscode, crossnoteSettings } from "../util/util";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -45,10 +45,12 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: "column",
       height: "100%",
       width: "100%",
+      backgroundColor: theme.palette.background.default,
     },
     topPanel: {
       padding: theme.spacing(1),
       borderRadius: 0,
+      backgroundColor: theme.palette.background.paper,
     },
     row: {
       display: "flex",
@@ -86,6 +88,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "inherit",
       border: "1px solid #bbb",
       borderRadius: "4px",
+      width: "100%",
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 7),
@@ -112,6 +115,9 @@ const useStyles = makeStyles((theme: Theme) =>
       "& svg": {
         color: theme.palette.primary.main,
       },
+    },
+    iconBtnSVG: {
+      color: theme.palette.text.secondary,
     },
   })
 );
@@ -236,7 +242,9 @@ export function NotesPanel(props: Props) {
             />
           </div>
           <IconButton onClick={createNewNote}>
-            <FileEditOutline></FileEditOutline>
+            <FileEditOutline
+              className={clsx(classes.iconBtnSVG)}
+            ></FileEditOutline>
           </IconButton>
         </Box>
         <Box
@@ -333,7 +341,7 @@ export function NotesPanel(props: Props) {
             <IconButton
               onClick={(event) => setSortMenuAnchorEl(event.currentTarget)}
             >
-              <SortVariant></SortVariant>
+              <SortVariant className={clsx(classes.iconBtnSVG)}></SortVariant>
             </IconButton>
             <Popover
               anchorEl={sortMenuAnchorEl}
@@ -384,7 +392,9 @@ export function NotesPanel(props: Props) {
                 >
                   <ListItemText primary={"Desc"}></ListItemText>
                   <ListItemIcon style={{ marginLeft: "8px" }}>
-                    <SortDescending></SortDescending>
+                    <SortDescending
+                      className={clsx(classes.iconBtnSVG)}
+                    ></SortDescending>
                   </ListItemIcon>
                 </ListItem>
                 <ListItem
@@ -397,7 +407,9 @@ export function NotesPanel(props: Props) {
                 >
                   <ListItemText primary={"Asc"}></ListItemText>
                   <ListItemIcon style={{ marginLeft: "8px" }}>
-                    <SortAscending></SortAscending>
+                    <SortAscending
+                      className={clsx(classes.iconBtnSVG)}
+                    ></SortAscending>
                   </ListItemIcon>
                 </ListItem>
               </List>

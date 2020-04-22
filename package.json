@@ -104,7 +104,9 @@
           "type": "string",
           "enum": [
             "light",
-            "dark"
+            "dark",
+            "solarized-light",
+            "one-dark"
           ]
         }
       }
@@ -145,7 +147,7 @@
     "typeface-roboto": "^0.0.75",
     "typescript": "^3.8.3",
     "unstated-next": "^1.1.0",
-    "vickymd": "^0.1.21",
+    "vickymd": "^0.1.23",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

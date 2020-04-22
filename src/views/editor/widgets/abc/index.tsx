@@ -85,6 +85,9 @@ K: Emin
       audioControlElement
     ) {
       setTimeout(() => {
+        if (!document.getElementById(editorElement.id)) {
+          return;
+        }
         const editor = new abcjs.Editor(editorElement.id, {
           canvas_id: canvasElement.id,
           warnings_id: warningsElement.id,

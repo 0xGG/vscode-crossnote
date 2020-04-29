@@ -923,12 +923,14 @@ export default function EditorPanel(props: Props) {
                     "editor/toolbar/insert-kanban"
                   )} (beta)`,
                 },
+                /*
                 {
                   text: "<!-- @crossnote.abc -->  \n",
                   displayText: `/abc - ${t(
                     "editor/toolbar/insert-abc-notation"
                   )}`,
                 },
+                */
                 {
                   text: "<!-- @crossnote.github_gist -->  \n",
                   displayText: `/github_gist - ${t(

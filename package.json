@@ -109,6 +109,15 @@
             "solarized-light",
             "one-dark"
           ]
+        },
+        "crossnote.keyMap": {
+          "description": "Crossnote editor key map (Please reload window after make changes)",
+          "default": "default",
+          "enum": [
+            "default",
+            "vim",
+            "emacs"
+          ]
         }
       }
     }

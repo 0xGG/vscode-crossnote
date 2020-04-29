@@ -5,7 +5,7 @@ export enum KeyMap {
 }
 
 export function getKeyMap(v: string): KeyMap {
-  if (v === "hypermd") {
+  if (v === "hypermd" || v === "default") {
     return KeyMap.DEFAULT;
   } else if (v === "vim") {
     return KeyMap.VIM;

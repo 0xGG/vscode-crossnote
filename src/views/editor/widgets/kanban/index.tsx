@@ -36,6 +36,7 @@ import { Editor as CodeMirrorEditor } from "codemirror";
 import { renderPreview } from "vickymd/preview";
 import { selectedTheme } from "../../../themes/manager";
 import { setTheme } from "vickymd/theme";
+import { crossnoteSettings } from "../../../util/util";
 const VickyMD = require("vickymd/core");
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -216,8 +217,10 @@ function KanbanCardDisplay(props: KanbanCardProps) {
           name: "hypermd",
           hashtag: true,
         },
-        inputStyle: "textarea",
-        // autofocus: false
+        keyMap: crossnoteSettings.keyMap,
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        inputStyle: "contenteditable",
       });
       editor.setValue(card.description);
       editor.setOption("lineNumbers", false);

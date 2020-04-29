@@ -44,7 +44,12 @@ import Noty from "noty";
 import * as CryptoJS from "crypto-js";
 import { Message, MessageAction } from "../../lib/message";
 import { TagNode } from "../../lib/notebook";
-import { vscode, resolveNoteImageSrc, extensionPath } from "../util/util";
+import {
+  vscode,
+  resolveNoteImageSrc,
+  extensionPath,
+  crossnoteSettings,
+} from "../util/util";
 import { Note, getHeaderFromMarkdown } from "../../lib/note";
 import { TagStopRegExp } from "../util/markdown";
 import { initMathPreview } from "../editor/views/math-preview";
@@ -539,8 +544,11 @@ export default function EditorPanel(props: Props) {
           name: "hypermd",
           hashtag: true,
         },
-        inputStyle: "textarea",
         hmdFold: HMDFold,
+        keyMap: crossnoteSettings.keyMap,
+        matchBrackets: true,
+        showCursorWhenSelecting: true,
+        inputStyle: "contenteditable",
       });
       editor.setOption("lineNumbers", false);
       editor.setOption("foldGutter", false);
@@ -923,12 +931,14 @@ export default function EditorPanel(props: Props) {
                     "editor/toolbar/insert-kanban"
                   )} (beta)`,
                 },
+                /*
                 {
                   text: "<!-- @crossnote.abc -->  \n",
                   displayText: `/abc - ${t(
                     "editor/toolbar/insert-abc-notation"
                   )}`,
                 },
+                */
                 {
                   text: "<!-- @crossnote.github_gist -->  \n",
                   displayText: `/github_gist - ${t(

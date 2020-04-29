@@ -11,15 +11,16 @@ note:
 
 (WIP) Turn your VSCode into a decent markdown note taking platform :grinning:
 
+**This project is still in its very early stage of development. There are lots of bugs and missing features :frog:**
+
 [![](https://img.shields.io/github/tag/0xGG/vscode-crossnote.svg)](https://github.com/0xGG/vscode-crossnote/releases) [![](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/shd101wyy.crossnote)](https://marketplace.visualstudio.com/items?itemName=shd101wyy.crossnote) [![](https://img.shields.io/github/stars/0xGG/vscode-crossnote.svg?style=social&label=Star)](https://github.com/0xGG/vscode-crossnote)
 
 [![](https://img.shields.io/badge/Supported%20by-VSCode%20Power%20User%20Course%20%E2%86%92-gray.svg?colorA=655BE1&colorB=4F44D6&style=for-the-badge)](https://a.paddle.com/v2/click/16413/111518?link=1227)
 
-**This project is still in its very early stage of development. There are lots of bugs and missing features :frog:**
+![](https://i.loli.net/2020/04/12/lTMIFCuUcyeSGjV.gif)
 
-![](https://i.loli.net/2020/04/12/lTMIFCuUcyeSGjV.gif)  
 The goal of this project is to be consistent with the web version [crossnote.app](https://crossnote.app) | [GitHub 0xGG/crossnote](https://github.com/0xGG/crossnote).  
-You can read the introduction notebook of the crossnote project directly on [crossnote](https://crossnote.app/?repo=https%3A%2F%2Fgithub.com%2F0xGG%2Fwelcome-notebook&branch=master&filePath=README.md) website or on [GitHub 0xGG/welcome-notebook](https://github.com/0xGG/welcome-notebook).  
+You can read the introduction notebook of the Crossnote project directly on [Crossnote](https://crossnote.app/?repo=https%3A%2F%2Fgithub.com%2F0xGG%2Fwelcome-notebook&branch=master&filePath=README.md) website or on [GitHub 0xGG/welcome-notebook](https://github.com/0xGG/welcome-notebook).  
 Right now many key pieces are missing, such as:
 
 - [x] Dark theme (We now support `dark`, `one-dark`, etc themes)
@@ -34,6 +35,7 @@ Right now many key pieces are missing, such as:
 Please go to the vscode extension settings, then search for:
 
 - `crossnote.theme`: Change the Crossnote theme. Please reload the window after you make changes.
+- `crossnote.keyMap`: Change the Crossnote editor key map. `default`, `vim`, and `emacs` key maps are supported.
 
 ## Thanks
 

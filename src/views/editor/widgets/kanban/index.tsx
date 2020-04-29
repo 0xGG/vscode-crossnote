@@ -218,7 +218,6 @@ function KanbanCardDisplay(props: KanbanCardProps) {
           hashtag: true,
         },
         keyMap: crossnoteSettings.keyMap,
-        matchBrackets: true,
         showCursorWhenSelecting: true,
         inputStyle: "contenteditable",
       });

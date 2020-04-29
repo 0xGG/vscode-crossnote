@@ -546,7 +546,6 @@ export default function EditorPanel(props: Props) {
         },
         hmdFold: HMDFold,
         keyMap: crossnoteSettings.keyMap,
-        matchBrackets: true,
         showCursorWhenSelecting: true,
         inputStyle: "contenteditable",
       });

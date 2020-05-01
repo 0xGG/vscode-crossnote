@@ -897,12 +897,13 @@ export default function EditorPanel(props: Props) {
                   text: "<!-- @crossnote.audio -->  \n",
                   displayText: `/audio - ${t("editor/toolbar/audio-url")}`,
                 },
+                /*
                 {
                   text: "<!-- @crossnote.netease_music -->  \n",
                   displayText: `/netease - ${t(
                     "editor/toolbar/netease-music"
                   )}`,
-                },
+                },*/
                 {
                   text: "<!-- @crossnote.video -->  \n",
                   displayText: `/video - ${t("editor/toolbar/video-url")}`,

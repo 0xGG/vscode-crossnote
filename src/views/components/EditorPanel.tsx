@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Card,
 } from "@material-ui/core";
 import {
   Editor as CodeMirrorEditor,
@@ -195,8 +196,7 @@ const useStyles = makeStyles((theme: Theme) =>
     floatWin: {
       position: "fixed",
       zIndex: 100,
-      background: "#EEE",
-      backgroundImage: "linear-gradient(to bottom, #FFF, #EEE)",
+      background: theme.palette.background.paper,
       borderRadius: "5px",
       overflow: "hidden",
       boxShadow: "0 3px 7px rgba(0,0,0,0.3)",
@@ -210,7 +210,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: "flex",
       alignItems: "center",
       background: "#579",
-      backgroundImage: "linear-gradient(to bottom, #68A, #579)",
       color: "#eee",
     },
     floatWinContent: {
@@ -1428,7 +1427,7 @@ export default function EditorPanel(props: Props) {
         </Box>
       </Box>
 
-      <Box
+      <Card
         id="math-preview"
         className={clsx(classes.floatWin, "float-win", "float-win-hidden")}
       >
@@ -1444,7 +1443,7 @@ export default function EditorPanel(props: Props) {
           className={clsx(classes.floatWinContent, "float-win-content")}
           id="math-preview-content"
         ></Box>
-      </Box>
+      </Card>
 
       <DeleteDialog
         open={deleteDialogOpen}

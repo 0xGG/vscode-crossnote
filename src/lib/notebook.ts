@@ -99,8 +99,7 @@ ${markdown}`;
 
   public async getNote(
     filePath: string,
-    stats?: fs.Stats,
-    notFullMarkdown?: boolean
+    stats?: fs.Stats
   ): Promise<Note | null> {
     const absFilePath = path.resolve(this.dir, filePath);
     if (!stats) {
@@ -140,7 +139,7 @@ ${markdown}`;
       const note: Note = {
         notebookPath: this.dir,
         filePath: slash(path.relative(this.dir, absFilePath)),
-        markdown: notFullMarkdown ? markdown.slice(0, 1000) : markdown,
+        markdown: markdown, // notFullMarkdown ? markdown.slice(0, 1000) : markdown, <= This will break the search
         config: noteConfig,
       };
       return note;
@@ -168,8 +167,7 @@ ${markdown}`;
       const stats = await pfs.stat(absFilePath);
       const note = await this.getNote(
         path.relative(this.dir, absFilePath),
-        stats,
-        true
+        stats
       );
       if (note) {
         notes.push(note);

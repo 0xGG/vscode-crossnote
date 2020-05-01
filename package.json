@@ -2,7 +2,7 @@
   "name": "crossnote",
   "displayName": "Crossnote",
   "description": "(WIP) Turn your VSCode into a decent markdown note taking platform",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "publisher": "shd101wyy",
   "main": "./out/extension.js",
   "repository": {
@@ -156,7 +156,7 @@
     "typeface-roboto": "^0.0.75",
     "typescript": "^3.8.3",
     "unstated-next": "^1.1.0",
-    "vickymd": "^0.1.26",
+    "vickymd": "^0.1.27",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {

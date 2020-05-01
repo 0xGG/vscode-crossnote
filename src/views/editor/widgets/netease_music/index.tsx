@@ -106,11 +106,7 @@ function NeteaseMusicWidget(props: WidgetArgs) {
                   autoplay,
                   id,
                 };
-                props.replaceSelf(
-                  `<!-- @crossnote.netease_music ${JSON.stringify(attrs)
-                    .replace(/^{/, "")
-                    .replace(/}$/, "")} -->`
-                );
+                props.setAttributes(attrs);
               }
             }
           }}

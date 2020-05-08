@@ -35,7 +35,7 @@ import { Message, MessageAction } from "../../lib/message";
 import { Note } from "../../lib/note";
 import { CrossnoteSectionType, SelectedSection } from "../../lib/section";
 import Notes, { OrderDirection, OrderBy } from "./Notes";
-import { vscode, crossnoteSettings } from "../util/util";
+import { vscode } from "../util/util";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.background.default,
     },
     topPanel: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(0, 1),
       borderRadius: 0,
       backgroundColor: theme.palette.background.paper,
     },

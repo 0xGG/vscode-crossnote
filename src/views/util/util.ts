@@ -25,7 +25,7 @@ export function resolveNoteImageSrc(note: Note, imageSrc: string) {
     )}`;
   } else {
     return `vscode-resource://file//${slash(
-      path.resolve(note.notebookPath, imageSrc)
+      path.join(note.notebookPath, path.dirname(note.filePath), imageSrc)
     )}`;
   }
 }

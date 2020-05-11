@@ -24,6 +24,7 @@ import {
   EditorChangeLinkedList,
   TextMarker,
 } from "codemirror";
+import "@mdi/font/css/materialdesignicons.min.css";
 import { useTranslation } from "react-i18next";
 import {
   Pencil,
@@ -75,6 +76,14 @@ const HMDFold = {
   widget: true,
   code: true,
 };
+
+interface CommandHint {
+  text: string;
+  command: string;
+  description: string;
+  icon?: string;
+  render: (element: HTMLElement, data: any, current: CommandHint) => void;
+}
 
 const previewZIndex = 99;
 const useStyles = makeStyles((theme: Theme) =>
@@ -829,59 +838,134 @@ export default function EditorPanel(props: Props) {
                 .slice(start, end)
                 .replace(/^\//, "");
 
-              const commands = [
+              const render = (
+                element: HTMLElement,
+                data: CommandHint[],
+                cur: CommandHint
+              ) => {
+                const wrapper = document.createElement("div");
+                wrapper.style.padding = "6px 0";
+                wrapper.style.display = "flex";
+                wrapper.style.flexDirection = "row";
+                wrapper.style.alignItems = "flex-start";
+                wrapper.style.maxWidth = "100%";
+                wrapper.style.minWidth = "200px";
+
+                const leftPanel = document.createElement("div");
+                const iconWrapper = document.createElement("div");
+                iconWrapper.style.padding = "0 6px";
+                iconWrapper.style.marginRight = "6px";
+                iconWrapper.style.fontSize = "1rem";
+
+                const iconElement = document.createElement("span");
+                iconElement.classList.add("mdi");
+                iconElement.classList.add(
+                  cur.icon || "mdi-help-circle-outline"
+                );
+                iconWrapper.appendChild(iconElement);
+                leftPanel.appendChild(iconWrapper);
+
+                const rightPanel = document.createElement("div");
+
+                const descriptionElement = document.createElement("p");
+                descriptionElement.innerText = cur.description;
+                descriptionElement.style.margin = "2px 0";
+                descriptionElement.style.padding = "0";
+
+                const commandElement = document.createElement("p");
+                commandElement.innerText = cur.command;
+                commandElement.style.margin = "0";
+                commandElement.style.padding = "0";
+                commandElement.style.fontSize = "0.7rem";
+
+                rightPanel.appendChild(descriptionElement);
+                rightPanel.appendChild(commandElement);
+
+                wrapper.appendChild(leftPanel);
+                wrapper.appendChild(rightPanel);
+                element.appendChild(wrapper);
+              };
+
+              const commands: CommandHint[] = [
                 {
                   text: "# ",
-                  displayText: `/h1 - ${t("editor/toolbar/insert-header-1")}`,
+                  command: "/h1",
+                  description: t("editor/toolbar/insert-header-1"),
+                  icon: "mdi-format-header-1",
+                  render,
                 },
                 {
                   text: "## ",
-                  displayText: `/h2 - ${t("editor/toolbar/insert-header-2")}`,
+                  command: "/h2",
+                  description: t("editor/toolbar/insert-header-2"),
+                  icon: "mdi-format-header-2",
+                  render,
                 },
                 {
                   text: "### ",
-                  displayText: `/h3 - ${t("editor/toolbar/insert-header-3")}`,
+                  command: "/h3",
+                  description: t("editor/toolbar/insert-header-3"),
+                  icon: "mdi-format-header-3",
+                  render,
                 },
                 {
                   text: "#### ",
-                  displayText: `/h4 - ${t("editor/toolbar/insert-header-4")}`,
+                  command: "/h4",
+                  description: t("editor/toolbar/insert-header-4"),
+                  icon: "mdi-format-header-4",
+                  render,
                 },
                 {
                   text: "##### ",
-                  displayText: `/h5 - ${t("editor/toolbar/insert-header-5")}`,
+                  command: "/h5",
+                  description: t("editor/toolbar/insert-header-5"),
+                  icon: "mdi-format-header-5",
+                  render,
                 },
                 {
                   text: "###### ",
-                  displayText: `/h6 - ${t("editor/toolbar/insert-header-6")}`,
+                  command: "/h6",
+                  description: t("editor/toolbar/insert-header-6"),
+                  icon: "mdi-format-header-6",
+                  render,
                 },
                 {
                   text: "> ",
-                  displayText: `/blockquote - ${t(
-                    "editor/toolbar/insert-blockquote"
-                  )}`,
+                  command: "/blockquote",
+                  description: t("editor/toolbar/insert-blockquote"),
+                  icon: "mdi-format-quote-open",
+                  render,
                 },
                 {
                   text: "* ",
-                  displayText: `/ul - ${t(
-                    "editor/toolbar/insert-unordered-list"
-                  )}`,
+                  command: "/ul",
+                  description: t("editor/toolbar/insert-unordered-list"),
+                  icon: "mdi-format-list-bulleted",
+                  render,
                 },
                 {
                   text: "1. ",
-                  displayText: `/ol - ${t(
-                    "editor/toolbar/insert-ordered-list"
-                  )}`,
+                  command: "/ol",
+                  description: t("editor/toolbar/insert-ordered-list"),
+                  icon: "mdi-format-list-numbered",
+                  render,
                 },
                 {
                   text: "<!-- @crossnote.image -->\n",
-                  displayText: `/image - ${t("editor/toolbar/insert-image")}`,
+                  command: "/image",
+                  description: t("editor/toolbar/insert-image"),
+                  icon: "mdi-image",
+                  render,
                 },
                 {
                   text: `|   |   |
-|---|---|
-|   |   |
+  |---|---|
+  |   |   |
   `,
-                  displayText: `/table - ${t("editor/toolbar/insert-table")}`,
+                  command: "/table",
+                  description: t("editor/toolbar/insert-table"),
+                  icon: "mdi-table",
+                  render,
                 },
                 {
                   text:
@@ -890,70 +974,97 @@ export default function EditorPanel(props: Props) {
                       .replace(/^{/, "")
                       .replace(/}$/, "") +
                     " -->\n",
-                  displayText: `/timer - ${t("editor/toolbar/insert-clock")}`,
+                  command: "/timer",
+                  description: t("editor/toolbar/insert-clock"),
+                  icon: "mdi-timer",
+                  render,
                 },
                 {
                   text: "<!-- @crossnote.audio -->  \n",
-                  displayText: `/audio - ${t("editor/toolbar/audio-url")}`,
+                  command: "/audio",
+                  description: t("editor/toolbar/insert-audio"),
+                  icon: "mdi-music",
+                  render,
                 },
                 /*
-                {
-                  text: "<!-- @crossnote.netease_music -->  \n",
-                  displayText: `/netease - ${t(
-                    "editor/toolbar/netease-music"
-                  )}`,
-                },*/
+                  {
+                    text: "<!-- @crossnote.netease_music -->  \n",
+                    displayText: `/netease - ${t(
+                      "editor/toolbar/netease-music",
+                    )}`,
+                  },
+                  */
                 {
                   text: "<!-- @crossnote.video -->  \n",
-                  displayText: `/video - ${t("editor/toolbar/video-url")}`,
+                  command: "/video",
+                  description: t("editor/toolbar/insert-video"),
+                  icon: "mdi-video",
+                  render,
                 },
                 {
                   text: "<!-- @crossnote.youtube -->  \n",
-                  displayText: `/youtube - ${t("editor/toolbar/youtube")}`,
+                  command: "/youtube",
+                  description: t("editor/toolbar/insert-youtube"),
+                  icon: "mdi-youtube",
+                  render,
                 },
                 {
                   text: "<!-- @crossnote.bilibili -->  \n",
-                  displayText: `/bilibili - ${t("editor/toolbar/bilibili")}`,
+                  command: "/bilibili",
+                  description: t("editor/toolbar/insert-bilibili"),
+                  icon: "mdi-television-classic",
+                  render,
                 },
                 {
                   text: "<!-- slide -->  \n",
-                  displayText: `/slide - ${t("editor/toolbar/insert-slide")}`,
+                  command: "/slide",
+                  description: t("editor/toolbar/insert-slide"),
+                  icon: "mdi-presentation",
+                  render,
                 },
                 {
                   text: "<!-- @crossnote.ocr -->  \n",
-                  displayText: `/ocr - ${t("editor/toolbar/insert-ocr")}`,
+                  command: "/ocr",
+                  description: t("editor/toolbar/insert-ocr"),
+                  icon: "mdi-ocr",
+                  render,
                 },
                 {
                   text:
                     '<!-- @crossnote.kanban "v":2,"board":{"columns":[]} -->  \n',
-                  displayText: `/kanban - ${t(
-                    "editor/toolbar/insert-kanban"
-                  )} (beta)`,
+                  command: "/kanban",
+                  description: `${t("editor/toolbar/insert-kanban")} (beta)`,
+                  icon: "mdi-developer-board",
+                  render,
+                },
+                /*
+                  {
+                    text: "<!-- @crossnote.abc -->  \n",
+                    displayText: `/abc - ${t(
+                      "editor/toolbar/insert-abc-notation",
+                    )}`,
+                  },
+                  */
+                {
+                  text: "<!-- @crossnote.github_gist -->  \n",
+                  command: "/github_gist",
+                  description: t("editor/toolbar/insert-github-gist"),
+                  icon: "mdi-github",
+                  render,
                 },
                 /*
                 {
-                  text: "<!-- @crossnote.abc -->  \n",
-                  displayText: `/abc - ${t(
-                    "editor/toolbar/insert-abc-notation"
-                  )}`,
+                  text: "<!-- @crossnote.comment -->  \n",
+                  command: "/crossnote.comment",
+                  description: t("editor/toolbar/insert-comment"),
+                  icon: "mdi-comment-multiple",
+                  render,
                 },
                 */
-                {
-                  text: "<!-- @crossnote.github_gist -->  \n",
-                  displayText: `/github_gist - ${t(
-                    "editor/toolbar/insert-github-gist"
-                  )}`,
-                },
-                /*{
-                  text: "<!-- @crossnote.comment -->  \n",
-                  displayText: `/crossnote.comment - ${t(
-                    "editor/toolbar/insert-comment"
-                  )}`,
-                },*/
               ];
               const filtered = commands.filter(
                 (item) =>
-                  item.displayText
+                  (item.command + item.description)
                     .toLocaleLowerCase()
                     .indexOf(currentWord.toLowerCase()) >= 0
               );

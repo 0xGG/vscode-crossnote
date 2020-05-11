@@ -7,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { Pin } from "mdi-material-ui";
 import { formatRelative } from "date-fns";
 import { basename } from "path";
-import { languageCodeToDateFNSLocale } from "../i18n/i18n";
 import { Message, MessageAction } from "../../lib/message";
 import {
   Note,
@@ -16,7 +15,6 @@ import {
   generateSummaryFromMarkdown,
 } from "../../lib/note";
 import { vscode, resolveNoteImageSrc } from "../util/util";
-import { SelectedSection } from "../../lib/section";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -220,9 +218,9 @@ export default function NoteCard(props: Props) {
         {images.length > 0 && (
           <Box className={clsx(classes.images)}>
             <Box className={clsx(classes.imagesWrapper)}>
-              {images.map((image) => (
+              {images.map((image, offset) => (
                 <div
-                  key={image}
+                  key={`${image}-${offset}`}
                   className={clsx(classes.image)}
                   style={{
                     backgroundImage: `url(${image})`,

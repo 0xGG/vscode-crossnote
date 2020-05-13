@@ -23,6 +23,7 @@ import {
   Editor as CodeMirrorEditor,
   EditorChangeLinkedList,
   TextMarker,
+  Position,
 } from "codemirror";
 import "@mdi/font/css/materialdesignicons.min.css";
 import { useTranslation } from "react-i18next";
@@ -41,6 +42,7 @@ import {
   ContentDuplicate,
   Close,
   LockOpen,
+  ViewSplitVertical,
 } from "mdi-material-ui";
 import Noty from "noty";
 import * as CryptoJS from "crypto-js";
@@ -201,6 +203,18 @@ const useStyles = makeStyles((theme: Theme) =>
     presentation: {
       padding: "0 !important",
     },
+    splitView: {
+      display: "flex",
+      flexDirection: "row",
+      "& .CodeMirror.CodeMirror": {
+        width: "50%",
+      },
+      "& $preview": {
+        position: "relative",
+        width: "50%",
+        borderLeft: `1px solid ${theme.palette.divider}`,
+      },
+    },
     // math
     floatWin: {
       position: "fixed",
@@ -248,6 +262,7 @@ export enum EditorMode {
   VickyMD = "VickyMD",
   SourceCode = "SourceCode",
   Preview = "Preview",
+  SplitView = "SplitView",
 }
 
 interface Props {}
@@ -508,6 +523,74 @@ export default function EditorPanel(props: Props) {
     vscode.postMessage(message);
   }, [note]);
 
+  const postprocessPreview = useCallback((previewElement: HTMLElement) => {
+    if (!previewElement) {
+      return;
+    }
+    const handleLinksClickEvent = (preview: HTMLElement) => {
+      // Handle link click event
+      const links = preview.getElementsByTagName("A");
+      for (let i = 0; i < links.length; i++) {
+        const link = links[i] as HTMLAnchorElement;
+        link.onclick = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (link.hasAttribute("data-topic")) {
+            const tag = link.getAttribute("data-topic");
+            if (tag.length) {
+              setSelectedSection({
+                type: CrossnoteSectionType.Tag,
+                path: tag,
+                notebook: {
+                  dir: note.notebookPath,
+                  name: "",
+                },
+              });
+            }
+          } else {
+            openURL(link.getAttribute("href"));
+          }
+        };
+      }
+    };
+    const resolveImages = (preview: HTMLElement) => {
+      const images = preview.getElementsByTagName("IMG");
+      for (let i = 0; i < images.length; i++) {
+        const image = images[i] as HTMLImageElement;
+        const imageSrc = image.getAttribute("src");
+        if (imageSrc) {
+          image.setAttribute("src", resolveNoteImageSrc(note, imageSrc));
+        }
+      }
+    };
+    if (
+      previewElement.childElementCount &&
+      previewElement.children[0].tagName.toUpperCase() === "IFRAME"
+    ) {
+      // presentation
+      previewElement.style.maxWidth = "100%";
+      previewElement.style.height = "100%";
+      previewElement.style.overflow = "hidden !important";
+      handleLinksClickEvent(
+        (previewElement.children[0] as HTMLIFrameElement).contentDocument
+          .body as HTMLElement
+      );
+      resolveImages(
+        (previewElement.children[0] as HTMLIFrameElement).contentDocument
+          .body as HTMLElement
+      );
+      setPreviewIsPresentation(true);
+    } else {
+      // normal
+      // previewElement.style.maxWidth = `${EditorPreviewMaxWidth}px`;
+      previewElement.style.height = "100%";
+      previewElement.style.overflow = "hidden !important";
+      handleLinksClickEvent(previewElement);
+      resolveImages(previewElement);
+      setPreviewIsPresentation(false);
+    }
+  }, []);
+
   useEffect(() => {
     const message: Message = {
       action: MessageAction.InitializedEditorPanelWebview,
@@ -718,77 +801,30 @@ export default function EditorPanel(props: Props) {
       VickyMD.switchToNormal(editor);
       editor.getWrapperElement().style.display = "block";
       editor.refresh();
-    } else {
+    } else if (editorMode === EditorMode.Preview) {
       editor.getWrapperElement().style.display = "none";
+    } else if (editorMode === EditorMode.SplitView) {
+      VickyMD.switchToNormal(editor);
+      editor.getWrapperElement().style.display = "block";
+      editor.refresh();
     }
   }, [editorMode, editor, note, isDecrypted]);
 
   // Render Preview
   useEffect(() => {
-    if (editorMode === EditorMode.Preview && editor && note && previewElement) {
+    if (
+      (editorMode === EditorMode.Preview ||
+        editorMode === EditorMode.SplitView) &&
+      editor &&
+      note &&
+      previewElement
+    ) {
       if (isDecrypted) {
-        const handleLinksClickEvent = (preview: HTMLElement) => {
-          // Handle link click event
-          const links = preview.getElementsByTagName("A");
-          for (let i = 0; i < links.length; i++) {
-            const link = links[i] as HTMLAnchorElement;
-            link.onclick = (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              if (link.hasAttribute("data-topic")) {
-                const tag = link.getAttribute("data-topic");
-                if (tag.length) {
-                  setSelectedSection({
-                    type: CrossnoteSectionType.Tag,
-                    path: tag,
-                    notebook: {
-                      dir: note.notebookPath,
-                      name: "",
-                    },
-                  });
-                }
-              } else {
-                openURL(link.getAttribute("href"));
-              }
-            };
-          }
-        };
-        const resolveImages = (preview: HTMLElement) => {
-          const images = preview.getElementsByTagName("IMG");
-          for (let i = 0; i < images.length; i++) {
-            const image = images[i] as HTMLImageElement;
-            const imageSrc = image.getAttribute("src");
-            if (imageSrc) {
-              image.setAttribute("src", resolveNoteImageSrc(note, imageSrc));
-            }
-          }
-        };
-        renderPreview(previewElement, editor.getValue());
-        if (
-          previewElement.childElementCount &&
-          previewElement.children[0].tagName.toUpperCase() === "IFRAME"
-        ) {
-          // presentation
-          previewElement.style.maxWidth = "100%";
-          previewElement.style.height = "100%";
-          previewElement.style.overflow = "hidden !important";
-          handleLinksClickEvent(
-            (previewElement.children[0] as HTMLIFrameElement).contentDocument
-              .body as HTMLElement
-          );
-          resolveImages(
-            (previewElement.children[0] as HTMLIFrameElement).contentDocument
-              .body as HTMLElement
-          );
-          setPreviewIsPresentation(true);
-        } else {
-          // normal
-          // previewElement.style.maxWidth = `${EditorPreviewMaxWidth}px`;
-          previewElement.style.height = "100%";
-          previewElement.style.overflow = "hidden !important";
-          handleLinksClickEvent(previewElement);
-          resolveImages(previewElement);
-          setPreviewIsPresentation(false);
+        try {
+          renderPreview(previewElement, editor.getValue());
+          postprocessPreview(previewElement);
+        } catch (error) {
+          previewElement.innerText = error;
         }
       } else {
         previewElement.innerHTML = `🔐 ${t("general/encrypted")}`;
@@ -801,7 +837,16 @@ export default function EditorPanel(props: Props) {
         };
       }
     }
-  }, [editorMode, editor, previewElement, note, isDecrypted, openURL, t]);
+  }, [
+    editorMode,
+    editor,
+    previewElement,
+    note,
+    isDecrypted,
+    openURL,
+    postprocessPreview,
+    t,
+  ]);
 
   // Command
   useEffect(() => {
@@ -1261,6 +1306,341 @@ export default function EditorPanel(props: Props) {
     };
   }, [editor, note, notebookTagNode, addTag /*t*/]);
 
+  // Split view
+  useEffect(() => {
+    if (
+      !editor ||
+      !note ||
+      !previewElement ||
+      editorMode !== EditorMode.SplitView
+    ) {
+      return;
+    }
+    let onChangeCallback: any = null;
+    let onCursorActivityCallback: any = null;
+    let onScrollCallback: any = null;
+    let onWindowResizeCallback: any = null;
+    let scrollMap: any = null;
+    let scrollTimeout: NodeJS.Timeout = null;
+    let previewScrollDelay = Date.now();
+    let editorScrollDelay = Date.now();
+    let currentLine: number = -1;
+    let editorClientWidth = editor.getScrollInfo().clientWidth;
+    let editorClientHeight = editor.getScrollInfo().clientHeight;
+    let lastCursorPosition: Position = null;
+
+    const totalLineCount = editor.lineCount();
+    const buildScrollMap = () => {
+      if (!totalLineCount) {
+        return null;
+      }
+      const scrollMap = [];
+      const nonEmptyList = [];
+
+      for (let i = 0; i < totalLineCount; i++) {
+        scrollMap.push(-1);
+      }
+
+      nonEmptyList.push(0);
+      scrollMap[0] = 0;
+
+      // write down the offsetTop of element that has 'data-line' property to scrollMap
+      const lineElements = previewElement.getElementsByClassName("sync-line");
+
+      for (let i = 0; i < lineElements.length; i++) {
+        let el = lineElements[i] as HTMLElement;
+        let t: any = el.getAttribute("data-line");
+        if (!t) {
+          continue;
+        }
+
+        t = parseInt(t, 10);
+        if (!t) {
+          continue;
+        }
+
+        // this is for ignoring footnote scroll match
+        if (t < nonEmptyList[nonEmptyList.length - 1]) {
+          el.removeAttribute("data-line");
+        } else {
+          nonEmptyList.push(t);
+
+          let offsetTop = 0;
+          while (el && el !== previewElement) {
+            offsetTop += el.offsetTop;
+            el = el.offsetParent as HTMLElement;
+          }
+
+          scrollMap[t] = Math.round(offsetTop);
+        }
+      }
+
+      nonEmptyList.push(totalLineCount);
+      scrollMap.push(previewElement.scrollHeight);
+
+      let pos = 0;
+      for (let i = 0; i < totalLineCount; i++) {
+        if (scrollMap[i] !== -1) {
+          pos++;
+          continue;
+        }
+
+        const a = nonEmptyList[pos - 1];
+        const b = nonEmptyList[pos];
+        scrollMap[i] = Math.round(
+          (scrollMap[b] * (i - a) + scrollMap[a] * (b - i)) / (b - a)
+        );
+      }
+
+      return scrollMap; // scrollMap's length == screenLineCount (vscode can't get screenLineCount... sad)
+    };
+    const scrollToPos = (scrollTop: number) => {
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = null;
+      }
+
+      if (scrollTop < 0) {
+        return;
+      }
+
+      const delay = 10;
+
+      const helper = (duration = 0) => {
+        scrollTimeout = setTimeout(() => {
+          if (duration <= 0) {
+            previewScrollDelay = Date.now() + 500;
+            previewElement.scrollTop = scrollTop;
+            return;
+          }
+
+          const difference = scrollTop - previewElement.scrollTop;
+
+          const perTick = (difference / duration) * delay;
+
+          // disable preview onscroll
+          previewScrollDelay = Date.now() + 500;
+
+          previewElement.scrollTop += perTick;
+          if (previewElement.scrollTop === scrollTop) {
+            return;
+          }
+
+          helper(duration - delay);
+        }, delay);
+      };
+
+      const scrollDuration = 120;
+      helper(scrollDuration);
+    };
+    const scrollToRevealSourceLine = (line: number, topRatio = 0.372) => {
+      if (line === currentLine) {
+        return;
+      } else {
+        currentLine = line;
+      }
+
+      // disable preview onscroll
+      previewScrollDelay = Date.now() + 500;
+
+      /*
+        if (presentationMode) {
+          scrollSyncToSlide(line);
+        } else {
+          scrollSyncToLine(line, topRatio);
+        }
+        */
+      scrollSyncToLine(line, topRatio);
+    };
+    const scrollSyncToLine = (line: number, topRatio: number = 0.372) => {
+      if (!scrollMap) {
+        scrollMap = buildScrollMap();
+      }
+      if (!scrollMap || line >= scrollMap.length) {
+        return;
+      }
+
+      if (line + 1 === totalLineCount) {
+        // last line
+        scrollToPos(previewElement.scrollHeight);
+      } else {
+        /**
+         * Since I am not able to access the viewport of the editor
+         * I used `golden section` (0.372) here for scrollTop.
+         */
+        scrollToPos(
+          Math.max(scrollMap[line] - previewElement.offsetHeight * topRatio, 0)
+        );
+      }
+    };
+    const revealEditorLine = (line: number) => {
+      const scrollInfo = editor.getScrollInfo();
+      editor.scrollIntoView({ line: line, ch: 0 }, scrollInfo.clientHeight / 2);
+      editorScrollDelay = Date.now() + 500;
+      if (
+        scrollInfo.clientHeight !== editorClientHeight ||
+        scrollInfo.clientWidth !== editorClientWidth
+      ) {
+        editorClientHeight = scrollInfo.clientHeight;
+        editorClientWidth = scrollInfo.clientWidth;
+        scrollMap = null;
+      }
+    };
+    const previewSyncSource = () => {
+      let scrollToLine;
+
+      if (previewElement.scrollTop === 0) {
+        // editorScrollDelay = Date.now() + 100
+        scrollToLine = 0;
+
+        revealEditorLine(scrollToLine);
+        return;
+      }
+
+      const top = previewElement.scrollTop + previewElement.offsetHeight / 2;
+
+      // try to find corresponding screen buffer row
+      if (!scrollMap) {
+        scrollMap = buildScrollMap();
+      }
+
+      let i = 0;
+      let j = scrollMap.length - 1;
+      let count = 0;
+      let screenRow = -1; // the screenRow is the bufferRow in vscode.
+      let mid;
+
+      while (count < 20) {
+        if (Math.abs(top - scrollMap[i]) < 20) {
+          screenRow = i;
+          break;
+        } else if (Math.abs(top - scrollMap[j]) < 20) {
+          screenRow = j;
+          break;
+        } else {
+          mid = Math.floor((i + j) / 2);
+          if (top > scrollMap[mid]) {
+            i = mid;
+          } else {
+            j = mid;
+          }
+        }
+        count++;
+      }
+
+      if (screenRow === -1) {
+        screenRow = mid;
+      }
+
+      scrollToLine = screenRow;
+      revealEditorLine(scrollToLine);
+      // @scrollToPos(screenRow * @editor.getLineHeightInPixels() - @previewElement.offsetHeight / 2, @editor.getElement())
+      // # @editor.getElement().setScrollTop
+
+      // track currnet time to disable onDidChangeScrollTop
+      // editorScrollDelay = Date.now() + 100
+    };
+
+    onChangeCallback = () => {
+      try {
+        const markdown = editor.getValue();
+        setTimeout(() => {
+          const newMarkdown = editor.getValue();
+          if (markdown === newMarkdown) {
+            renderPreview(previewElement, editor.getValue());
+            postprocessPreview(previewElement);
+          }
+        }, 300);
+      } catch (error) {
+        previewElement.innerText = error;
+      }
+      // Reset scrollMap
+      scrollMap = null;
+    };
+    onCursorActivityCallback = () => {
+      const cursor = editor.getCursor();
+      const scrollInfo = editor.getScrollInfo();
+      const firstLine = editor.lineAtHeight(scrollInfo.top, "local");
+      const lastLine = editor.lineAtHeight(
+        scrollInfo.top + scrollInfo.clientHeight,
+        "local"
+      );
+      if (!lastCursorPosition || lastCursorPosition.line !== cursor.line) {
+        scrollSyncToLine(
+          cursor.line,
+          (cursor.line - firstLine) / (lastLine - firstLine)
+        );
+      }
+      lastCursorPosition = cursor;
+    };
+    onScrollCallback = () => {
+      // console.log("scroll editor: ", editor.getScrollInfo());
+      // console.log("viewport: ", editor.getViewport());
+      const scrollInfo = editor.getScrollInfo();
+      if (
+        scrollInfo.clientHeight !== editorClientHeight ||
+        scrollInfo.clientWidth !== editorClientWidth
+      ) {
+        editorClientHeight = scrollInfo.clientHeight;
+        editorClientWidth = scrollInfo.clientWidth;
+        scrollMap = null;
+      }
+
+      if (Date.now() < editorScrollDelay) {
+        return;
+      }
+      const topLine = editor.lineAtHeight(scrollInfo.top, "local");
+      const bottomLine = editor.lineAtHeight(
+        scrollInfo.top + scrollInfo.clientHeight,
+        "local"
+      );
+      let midLine;
+      if (topLine === 0) {
+        midLine = 0;
+      } else if (bottomLine === totalLineCount - 1) {
+        midLine = bottomLine;
+      } else {
+        midLine = Math.floor((topLine + bottomLine) / 2);
+      }
+      scrollSyncToLine(midLine);
+    };
+    onWindowResizeCallback = () => {
+      const scrollInfo = editor.getScrollInfo();
+      editorClientHeight = scrollInfo.clientHeight;
+      editorClientWidth = scrollInfo.clientWidth;
+      scrollMap = null;
+    };
+
+    editor.on("changes", onChangeCallback);
+    onChangeCallback();
+
+    editor.on("cursorActivity", onCursorActivityCallback);
+    editor.on("scroll", onScrollCallback);
+    previewElement.onscroll = () => {
+      // console.log("scroll preview: ", previewElement.scrollTop);
+      if (Date.now() < previewScrollDelay) {
+        return;
+      }
+      previewSyncSource();
+    };
+    window.addEventListener("resize", onWindowResizeCallback);
+
+    return () => {
+      if (onChangeCallback) {
+        editor.off("changes", onChangeCallback);
+      }
+      if (onCursorActivityCallback) {
+        editor.off("cursorActivity", onCursorActivityCallback);
+      }
+      if (onScrollCallback) {
+        editor.off("scroll", onScrollCallback);
+      }
+      if (onWindowResizeCallback) {
+        window.removeEventListener("resize", onWindowResizeCallback);
+      }
+    };
+  }, [editor, note, previewElement, editorMode, postprocessPreview]);
+
   if (!note) {
     return (
       <Box className={clsx(classes.editorPanel, "editor-panel")}>
@@ -1314,6 +1694,21 @@ export default function EditorPanel(props: Props) {
                 onClick={() => setEditorMode(EditorMode.SourceCode)}
               >
                 <CodeTags></CodeTags>
+              </Button>
+            </Tooltip>
+            <Tooltip title={t("editor/note-control/split-view")}>
+              <Button
+                className={clsx(
+                  classes.controlBtn,
+                  editorMode === EditorMode.SplitView &&
+                    classes.controlBtnSelected
+                )}
+                color={
+                  editorMode === EditorMode.SplitView ? "primary" : "default"
+                }
+                onClick={() => setEditorMode(EditorMode.SplitView)}
+              >
+                <ViewSplitVertical></ViewSplitVertical>
               </Button>
             </Tooltip>
             <Tooltip title={t("editor/note-control/preview")}>
@@ -1475,7 +1870,12 @@ export default function EditorPanel(props: Props) {
           </Popover>
         </Box>
       </Box>
-      <Box className={clsx(classes.editorWrapper)}>
+      <Box
+        className={clsx(
+          classes.editorWrapper,
+          editorMode === EditorMode.SplitView ? classes.splitView : null
+        )}
+      >
         <textarea
           className={clsx(classes.editor, "editor-textarea")}
           placeholder={t("editor/placeholder")}
@@ -1483,8 +1883,8 @@ export default function EditorPanel(props: Props) {
             setTextAreaElement(element);
           }}
         ></textarea>
-        {editorMode === EditorMode.Preview &&
-        /*!editorContainer.pinPreviewOnTheSide &&*/
+        {(editorMode === EditorMode.Preview ||
+          editorMode === EditorMode.SplitView) &&
         editor ? (
           <div
             className={clsx(

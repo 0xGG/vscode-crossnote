@@ -224,9 +224,9 @@ export function NotesPanel(props: Props) {
     <Box className={clsx(classes.notesPanel)}>
       <Card className={clsx(classes.topPanel)}>
         <Box className={clsx(classes.row)}>
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <Magnify />
+          <div className={clsx(classes.search)}>
+            <div className={clsx(classes.searchIcon)}>
+              <Magnify className={clsx(classes.iconBtnSVG)} />
             </div>
             <InputBase
               placeholder={t("search/placeholder")}

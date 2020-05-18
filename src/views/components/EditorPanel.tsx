@@ -53,6 +53,7 @@ import {
   resolveNoteImageSrc,
   extensionPath,
   crossnoteSettings,
+  setSelectedSection,
 } from "../util/util";
 import { Note, getHeaderFromMarkdown } from "../../lib/note";
 import { TagStopRegExp } from "../util/markdown";
@@ -66,6 +67,10 @@ import ChangeFilePathDialog from "./ChangeFilePathDialog";
 import EditImageDialog from "./EditImageDialog";
 import { setTheme } from "vickymd/theme";
 import { selectedTheme } from "../themes/manager";
+import {
+  openURL,
+  postprocessPreview as previewPostprocessPreview,
+} from "../util/preview";
 
 const VickyMD = require("vickymd/core");
 
@@ -325,31 +330,6 @@ export default function EditorPanel(props: Props) {
     []
   );
 
-  const openURL = useCallback(
-    (url: string) => {
-      if (!note) {
-        return;
-      }
-      const message: Message = {
-        action: MessageAction.OpenURL,
-        data: {
-          note,
-          url,
-        },
-      };
-      vscode.postMessage(message);
-    },
-    [note]
-  );
-
-  const setSelectedSection = useCallback((selectedSection: SelectedSection) => {
-    const message: Message = {
-      action: MessageAction.SetSelectedSection,
-      data: selectedSection,
-    };
-    vscode.postMessage(message);
-  }, []);
-
   const closeFilePathDialog = useCallback(() => {
     if (!note) {
       return;
@@ -523,74 +503,14 @@ export default function EditorPanel(props: Props) {
     vscode.postMessage(message);
   }, [note]);
 
-  const postprocessPreview = useCallback((previewElement: HTMLElement) => {
-    if (!previewElement) {
-      return;
-    }
-    const handleLinksClickEvent = (preview: HTMLElement) => {
-      // Handle link click event
-      const links = preview.getElementsByTagName("A");
-      for (let i = 0; i < links.length; i++) {
-        const link = links[i] as HTMLAnchorElement;
-        link.onclick = (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          if (link.hasAttribute("data-topic")) {
-            const tag = link.getAttribute("data-topic");
-            if (tag.length) {
-              setSelectedSection({
-                type: CrossnoteSectionType.Tag,
-                path: tag,
-                notebook: {
-                  dir: note.notebookPath,
-                  name: "",
-                },
-              });
-            }
-          } else {
-            openURL(link.getAttribute("href"));
-          }
-        };
-      }
-    };
-    const resolveImages = (preview: HTMLElement) => {
-      const images = preview.getElementsByTagName("IMG");
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i] as HTMLImageElement;
-        const imageSrc = image.getAttribute("src");
-        if (imageSrc) {
-          image.setAttribute("src", resolveNoteImageSrc(note, imageSrc));
-        }
-      }
-    };
-    if (
-      previewElement.childElementCount &&
-      previewElement.children[0].tagName.toUpperCase() === "IFRAME"
-    ) {
-      // presentation
-      previewElement.style.maxWidth = "100%";
-      previewElement.style.height = "100%";
-      previewElement.style.overflow = "hidden !important";
-      handleLinksClickEvent(
-        (previewElement.children[0] as HTMLIFrameElement).contentDocument
-          .body as HTMLElement
-      );
-      resolveImages(
-        (previewElement.children[0] as HTMLIFrameElement).contentDocument
-          .body as HTMLElement
-      );
-      setPreviewIsPresentation(true);
-    } else {
-      // normal
-      // previewElement.style.maxWidth = `${EditorPreviewMaxWidth}px`;
-      previewElement.style.height = "100%";
-      previewElement.style.overflow = "hidden !important";
-      handleLinksClickEvent(previewElement);
-      resolveImages(previewElement);
-      setPreviewIsPresentation(false);
-    }
-  }, []);
-
+  const postprocessPreview = useCallback(
+    (previewElement: HTMLElement) => {
+      previewPostprocessPreview(previewElement, note, (flag) => {
+        setPreviewIsPresentation(flag);
+      });
+    },
+    [note]
+  );
   useEffect(() => {
     const message: Message = {
       action: MessageAction.InitializedEditorPanelWebview,
@@ -754,7 +674,7 @@ export default function EditorPanel(props: Props) {
 
     const linkIconClickedHandler = (args: any) => {
       const url = args.element.getAttribute("data-url");
-      openURL(url || "");
+      openURL(url || "", note);
     };
     editor.on("linkIconClicked", linkIconClickedHandler);
 
@@ -785,7 +705,7 @@ export default function EditorPanel(props: Props) {
       editor.off("imageClicked", imageClickedHandler);
       editor.off("imageReadyToLoad", loadImage);
     };
-  }, [editor, note, decryptionPassword, isDecrypted, openURL]);
+  }, [editor, note, decryptionPassword, isDecrypted]);
 
   useEffect(() => {
     if (!editor || !note) {
@@ -843,7 +763,6 @@ export default function EditorPanel(props: Props) {
     previewElement,
     note,
     isDecrypted,
-    openURL,
     postprocessPreview,
     t,
   ]);

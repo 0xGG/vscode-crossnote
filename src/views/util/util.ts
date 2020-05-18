@@ -1,8 +1,9 @@
-import { Message } from "../../lib/message";
+import { Message, MessageAction } from "../../lib/message";
 import { Note } from "../../lib/note";
 import { CrossnoteSettings } from "../../lib/settings";
 import * as path from "path";
 import slash from "slash";
+import { SelectedSection } from "../../lib/section";
 
 interface VSCodeWebviewAPI {
   postMessage: (message: Message) => void;
@@ -28,6 +29,14 @@ export function resolveNoteImageSrc(note: Note, imageSrc: string) {
       path.join(note.notebookPath, path.dirname(note.filePath), imageSrc)
     )}`;
   }
+}
+
+export function setSelectedSection(selectedSection: SelectedSection) {
+  const message: Message = {
+    action: MessageAction.SetSelectedSection,
+    data: selectedSection,
+  };
+  vscode.postMessage(message);
 }
 
 export const crossnoteSettings: CrossnoteSettings = window[

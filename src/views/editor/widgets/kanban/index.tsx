@@ -74,9 +74,6 @@ const useStyles = makeStyles((theme: Theme) =>
     preview: {
       padding: theme.spacing(2),
     },
-    iconBtnSVG: {
-      color: theme.palette.text.secondary,
-    },
   })
 );
 
@@ -271,7 +268,7 @@ function KanbanCardDisplay(props: KanbanCardProps) {
       {!isPreview && (
         <Box style={{ position: "absolute", top: "0", right: "0", zIndex: 99 }}>
           <IconButton onClick={() => setEditDialogOpen(true)}>
-            <Pencil className={clsx(classes.iconBtnSVG)}></Pencil>
+            <Pencil></Pencil>
           </IconButton>
           <IconButton
             onClick={() => {
@@ -281,7 +278,7 @@ function KanbanCardDisplay(props: KanbanCardProps) {
               props.refreshBoard(board);
             }}
           >
-            <Close className={clsx(classes.iconBtnSVG)}></Close>
+            <Close></Close>
           </IconButton>
         </Box>
       )}
@@ -311,7 +308,7 @@ function KanbanCardDisplay(props: KanbanCardProps) {
               setEditDialogOpen(false);
             }}
           >
-            <ContentSave className={clsx(classes.iconBtnSVG)}></ContentSave>
+            <ContentSave></ContentSave>
           </IconButton>
           <IconButton
             onClick={() => {
@@ -322,7 +319,7 @@ function KanbanCardDisplay(props: KanbanCardProps) {
               setEditDialogOpen(false);
             }}
           >
-            <Cancel className={clsx(classes.iconBtnSVG)}></Cancel>
+            <Cancel></Cancel>
           </IconButton>
         </DialogActions>
       </Dialog>

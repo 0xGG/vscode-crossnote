@@ -45,9 +45,6 @@ const useStyles = makeStyles((theme: Theme) =>
       top: "0",
       right: "0",
     },
-    iconBtnSVG: {
-      color: theme.palette.text.secondary,
-    },
   })
 );
 
@@ -136,7 +133,7 @@ K: Emin
         ></textarea>
         {!props.isPreview && attributes["abc"] !== abc && (
           <IconButton
-            className={clsx(classes.saveBtn, classes.iconBtnSVG)}
+            className={clsx(classes.saveBtn)}
             onClick={() => {
               props.setAttributes(Object.assign(props.attributes, { abc }));
             }}

@@ -248,9 +248,6 @@ const useStyles = makeStyles((theme: Theme) =>
     floatWinClose: {
       color: "#eee",
     },
-    iconBtnSVG: {
-      color: theme.palette.text.secondary,
-    },
   })
 );
 
@@ -743,6 +740,7 @@ export default function EditorPanel(props: Props) {
         try {
           renderPreview(previewElement, editor.getValue());
           postprocessPreview(previewElement);
+          previewElements.scrollTop = 0;
         } catch (error) {
           previewElement.innerText = error;
         }
@@ -1772,7 +1770,7 @@ export default function EditorPanel(props: Props) {
                       >
                         <Typography>{tagName}</Typography>
                         <IconButton onClick={() => deleteTag(tagName)}>
-                          <Close className={clsx(classes.iconBtnSVG)}></Close>
+                          <Close></Close>
                         </IconButton>
                       </Box>
                     </ListItem>

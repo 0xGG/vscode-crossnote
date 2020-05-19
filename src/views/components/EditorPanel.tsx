@@ -71,6 +71,7 @@ import {
   openURL,
   postprocessPreview as previewPostprocessPreview,
 } from "../util/preview";
+import { TagsMenuPopover } from "./TagsMenuPopover";
 
 const VickyMD = require("vickymd/core");
 
@@ -296,7 +297,6 @@ export default function EditorPanel(props: Props) {
   const [decryptionPassword, setDecryptionPassword] = useState<string>("");
   const [isDecrypted, setIsDecrypted] = useState<boolean>(false);
   const [tagsMenuAnchorEl, setTagsMenuAnchorEl] = useState<HTMLElement>(null);
-  const [tagName, setTagName] = useState<string>("");
   const [tagNames, setTagNames] = useState<string[]>([]);
   const [editImageElement, setEditImageElement] = useState<HTMLImageElement>(
     null
@@ -387,7 +387,6 @@ export default function EditorPanel(props: Props) {
         // crossnoteContainer.updateNotebookTagNode();
         return newTagNames;
       });
-      setTagName("");
     },
     [note, editor, decryptionPassword, isDecrypted]
   );
@@ -740,7 +739,7 @@ export default function EditorPanel(props: Props) {
         try {
           renderPreview(previewElement, editor.getValue());
           postprocessPreview(previewElement);
-          previewElements.scrollTop = 0;
+          previewElement.scrollTop = 0;
         } catch (error) {
           previewElement.innerText = error;
         }
@@ -1724,67 +1723,14 @@ export default function EditorPanel(props: Props) {
               </Tooltip>
             )}
           </ButtonGroup>
-          <Popover
-            open={Boolean(tagsMenuAnchorEl)}
-            anchorEl={tagsMenuAnchorEl}
-            keepMounted
+          <TagsMenuPopover
+            anchorElement={tagsMenuAnchorEl}
             onClose={() => setTagsMenuAnchorEl(null)}
-          >
-            <List>
-              <ListItem
-                className={clsx(
-                  classes.menuItemOverride,
-                  classes.menuItemTextField
-                )}
-              >
-                <TextField
-                  placeholder={t("general/add-a-tag")}
-                  autoFocus={true}
-                  value={tagName}
-                  onChange={(event) => {
-                    event.stopPropagation();
-                    setTagName(event.target.value);
-                  }}
-                  onKeyUp={(event) => {
-                    if (event.which === 13) {
-                      addTag(tagName);
-                    }
-                  }}
-                ></TextField>
-              </ListItem>
-              {tagNames.length > 0 ? (
-                tagNames.map((tagName) => {
-                  return (
-                    <ListItem
-                      key={tagName}
-                      className={clsx(classes.menuItemOverride)}
-                    >
-                      <Box
-                        style={{
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          width: "100%",
-                        }}
-                      >
-                        <Typography>{tagName}</Typography>
-                        <IconButton onClick={() => deleteTag(tagName)}>
-                          <Close></Close>
-                        </IconButton>
-                      </Box>
-                    </ListItem>
-                  );
-                })
-              ) : (
-                <ListItem className={clsx(classes.menuItemOverride)}>
-                  <Typography style={{ margin: "8px 0" }}>
-                    {t("general/no-tags")}
-                  </Typography>
-                </ListItem>
-              )}
-            </List>
-          </Popover>
+            addTag={addTag}
+            deleteTag={deleteTag}
+            tagNames={tagNames}
+            notebookTagNode={notebookTagNode}
+          ></TagsMenuPopover>
         </Box>
       </Box>
       <Box

@@ -2,7 +2,7 @@
   "name": "crossnote",
   "displayName": "Crossnote",
   "description": "(WIP) Turn your VSCode into a decent markdown note taking platform",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "publisher": "shd101wyy",
   "main": "./out/extension.js",
   "repository": {

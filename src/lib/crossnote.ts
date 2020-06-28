@@ -272,6 +272,12 @@ export class Crossnote {
 
   public async openNoteByPath(absFilePath: string) {
     let note: Note | null = null;
+
+    // TODO: Check #heading
+    if (!absFilePath.match(/\.md($|#)/)) {
+      absFilePath += ".md";
+    }
+
     for (let i = 0; i < this.notebooks.length; i++) {
       const notebook = this.notebooks[i];
       if (absFilePath.startsWith(notebook.dir)) {
@@ -284,6 +290,32 @@ export class Crossnote {
 
     if (note) {
       this.openEditorPanelWebview(note);
+    } else if (this.selectedNote) {
+      try {
+        const notebook = this.getNotebookByPath(this.selectedNote.notebookPath);
+        if (notebook) {
+          const newNote = await notebook.createNewNote(
+            {
+              type: CrossnoteSectionType.Directory,
+              path: path.relative(notebook.dir, path.dirname(absFilePath)),
+              notebook,
+            },
+            path.basename(absFilePath),
+            `# ${path.basename(absFilePath).replace(/\.md/, "")}`
+          );
+          if (newNote) {
+            // Refresh
+            this.sendNotesToNotesPanelWebview();
+            this.openEditorPanelWebview(newNote);
+          } else {
+            vscode.window.showErrorMessage(
+              `Failed to create note at ${absFilePath}`
+            );
+          }
+        }
+      } catch (error) {
+        vscode.window.showErrorMessage(error.toString());
+      }
     } else {
       vscode.window.showErrorMessage(
         `Please make sure ${absFilePath} is saved and belongs to a folder in current workspace`

@@ -60,6 +60,8 @@ export class Notebook {
     this.dir = dir;
   }
 
+  // TODO: Change to use FileSystemWatcher
+  // https://code.visualstudio.com/api/references/vscode-api#FileSystemWatcher
   public async initData() {
     this.notes = await this.listNotes({
       dir: "./",

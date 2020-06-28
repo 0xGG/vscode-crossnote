@@ -555,6 +555,17 @@ export default function EditorPanel(props: Props) {
         keyMap: crossnoteSettings.keyMap,
         showCursorWhenSelecting: true,
         inputStyle: "contenteditable",
+        hmdClick: (info: any, cm: CodeMirrorEditor) => {
+          let { text, url } = info;
+          if (info.type === "link" || info.type === "url") {
+            const footnoteRef = text.match(/\[[^[\]]+\](?:\[\])?$/); // bare link, footref or [foot][] . assume no escaping char inside
+            if (!footnoteRef && (info.ctrlKey || info.altKey) && url) {
+              // just open URL
+              openURL(url, note);
+              return false; // Prevent default click event
+            }
+          }
+        },
       });
       editor.setOption("lineNumbers", false);
       editor.setOption("foldGutter", false);

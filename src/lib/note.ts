@@ -6,7 +6,6 @@ export interface NoteConfigEncryption {
 }
 
 export interface NoteConfig {
-  id?: string;
   createdAt: Date;
   modifiedAt: Date;
   tags?: string[];

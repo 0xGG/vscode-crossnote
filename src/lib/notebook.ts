@@ -32,6 +32,22 @@ interface MatterOutput {
   content: string;
 }
 
+/**
+ * Change "createdAt" to "created", and "modifiedAt" to "modified"
+ * @param noteConfig
+ */
+function formatNoteConfig(noteConfig: NoteConfig) {
+  const newObject: any = Object.assign({}, noteConfig);
+
+  newObject["created"] = noteConfig.createdAt;
+  delete newObject["createdAt"];
+
+  newObject["modified"] = noteConfig.modifiedAt;
+  delete newObject["modifiedAt"];
+
+  return newObject;
+}
+
 export class Notebook {
   public name: string;
   public dir: string;
@@ -44,6 +60,8 @@ export class Notebook {
     this.dir = dir;
   }
 
+  // TODO: Change to use FileSystemWatcher
+  // https://code.visualstudio.com/api/references/vscode-api#FileSystemWatcher
   public async initData() {
     this.notes = await this.listNotes({
       dir: "./",
@@ -123,9 +141,52 @@ ${markdown}`;
 
       try {
         const data = this.matter(markdown);
-        noteConfig = Object.assign(noteConfig, data.data["note"] || {});
         const frontMatter: any = Object.assign({}, data.data);
-        delete frontMatter["note"];
+
+        if (data.data["note"]) {
+          // Legacy note config
+          noteConfig = Object.assign(noteConfig, data.data["note"] || {});
+          delete frontMatter["note"];
+
+          // Migration
+          if (noteConfig.createdAt && noteConfig.modifiedAt) {
+            const newFrontMatter = Object.assign(
+              {},
+              frontMatter,
+              formatNoteConfig(noteConfig)
+            );
+            const newMarkdown = this.matterStringify(
+              data.content,
+              newFrontMatter
+            );
+            await pfs.writeFile(absFilePath, newMarkdown);
+          }
+        } else {
+          // New note config design in beta 3
+          if (data.data["created"]) {
+            noteConfig.createdAt = new Date(data.data["created"]);
+            delete frontMatter["created"];
+          }
+          if (data.data["modified"]) {
+            noteConfig.modifiedAt = new Date(data.data["modified"]);
+            delete frontMatter["modified"];
+          }
+          if (data.data["tags"]) {
+            // TODO: Remove this tags support
+            noteConfig.tags = data.data["tags"];
+            delete frontMatter["tags"];
+          }
+          if (data.data["encryption"]) {
+            // TODO: Remove the encryption support
+            noteConfig.encryption = data.data["encryption"];
+            delete frontMatter["encryption"];
+          }
+          if (data.data["pinned"]) {
+            noteConfig.pinned = data.data["pinned"];
+            delete frontMatter["pinned"];
+          }
+        }
+
         // markdown = matter.stringify(data.content, frontMatter); // <= NOTE: I think gray-matter has bug. Although I delete "note" section from front-matter, it still includes it.
         markdown = this.matterStringify(data.content, frontMatter);
       } catch (error) {
@@ -294,7 +355,10 @@ ${markdown}`;
       if (data.data["note"] && data.data["note"] instanceof Object) {
         noteConfig = Object.assign({}, noteConfig, data.data["note"] || {});
       }
-      const frontMatter = Object.assign(data.data || {}, { note: noteConfig });
+      const frontMatter = Object.assign(
+        data.data || {},
+        formatNoteConfig(noteConfig)
+      );
       markdown = data.content;
       if (noteConfig.encryption) {
         // TODO: Refactor
@@ -326,7 +390,7 @@ ${markdown}`;
         notebookPath: this.dir,
         filePath: filePath,
       };
-      markdown = this.matterStringify(markdown, { note: noteConfig });
+      markdown = this.matterStringify(markdown, formatNoteConfig(noteConfig));
     }
 
     await pfs.writeFile(path.resolve(this.dir, filePath), markdown);
@@ -389,8 +453,12 @@ ${markdown}`;
     return newNote;
   }
 
-  public async createNewNote(selectedSection: SelectedSection) {
-    const fileName = "unnamed_" + randomID() + ".md";
+  public async createNewNote(
+    selectedSection: SelectedSection,
+    fileName = "",
+    markdown = ""
+  ) {
+    fileName = fileName || "unnamed_" + randomID() + ".md";
     let filePath;
     let tags: string[] = [];
     if (selectedSection.type === CrossnoteSectionType.Tag) {
@@ -410,7 +478,7 @@ ${markdown}`;
       modifiedAt: new Date(),
       createdAt: new Date(),
     };
-    const newNote = await this.writeNote(filePath, "", noteConfig);
+    const newNote = await this.writeNote(filePath, markdown, noteConfig);
     if (newNote) {
       this.notes = [newNote, ...this.notes];
     }

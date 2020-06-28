@@ -1,8 +1,7 @@
 ---
-note:
-  createdAt: 2020-04-12T12:45:54.675Z
-  modifiedAt: 2020-04-12T13:01:03.840Z
-  tags: []
+created: "2020-04-12T12:45:54.675Z"
+modified: "2020-04-12T13:01:03.840Z"
+tags: []
 ---
 
 ![](./media/logo128.png)
